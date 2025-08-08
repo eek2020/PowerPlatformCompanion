@@ -54,7 +54,7 @@ We will:
 
 ## 3. Chosen Path – React
 
-**Core Tooling**
+### Core Tooling
 
 ```bash
 brew install node
@@ -64,24 +64,24 @@ npm install
 npm run dev
 ```
 
-**Recommended Libraries**
+### Recommended Libraries
 
 ```bash
 npm install @tanstack/react-query axios @azure/msal-browser
 npm install --save-dev eslint prettier
 ```
 
-**State & Data**
+### State & Data
 
 * React Query / Redux Toolkit / Zustand
 * Axios for HTTP
 * MSAL for Microsoft API auth
 
-**UI & Styling**
+### UI & Styling
 
 * Material UI, Chakra UI, Ant Design, or Tailwind
 
-**Testing**
+### Testing
 
 ```bash
 npm install --save-dev jest @testing-library/react @testing-library/jest-dom
@@ -241,6 +241,7 @@ You are the Power Platform Companion assistant.
    ```bash
    code .
    ```
+
 4. Commit & push:
 
    ```bash

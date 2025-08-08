@@ -3,9 +3,9 @@
 This document outlines the fastest path to ship the existing React + Vite SPA (`web/`) as installable desktop apps for macOS and Windows WITHOUT using their app stores. Mobile (Android/iOS) is intentionally out of scope for now.
 
 Assumptions:
+
 - The app is client‑only, uses `localStorage`, and needs file save/open and clipboard.
 - No heavy native integrations are required at this time.
-
 
 ## Recommendation at a Glance
 
@@ -15,13 +15,12 @@ Assumptions:
   - Windows: EXE/MSI installer; signing recommended to reduce SmartScreen prompts.
 - Abstraction: Add a tiny platform adapter for file/clipboard so web/desktop share one code path.
 
-
 ## Why Tauri over Electron (for us)
+
 - Very small runtime compared to Electron (Rust shell + system webview).
 - First‑class APIs for filesystem, dialogs, clipboard, and auto‑updater.
 - Easy packaging for macOS and Windows; good CI story.
 - If we later need Node modules, Electron may be simpler; for our current needs, Tauri is leaner.
-
 
 ## macOS (Direct distribution)
 
@@ -31,7 +30,8 @@ Assumptions:
   - DMG with drag‑to‑Applications is familiar and clean.
   - ZIP is fine for internal users; macOS will quarantine unsigned apps.
 
-### Steps
+### macOS Steps
+
 1. Add Tauri to the project (desktop shell alongside `web/`).
 2. Point Tauri to Vite build output (`dist/`) and wire up:
    - File save dialog for CSV export (replace File System Access API with Tauri `dialog` + `fs`).
@@ -43,14 +43,15 @@ Assumptions:
    - Internal use only: keep unsigned, but users must right‑click → Open (Gatekeeper warning).
 
 ### Challenges
+
 - Code signing + notarization pipeline (Apple Developer account, CI secrets).
 - Hardened runtime flags and entitlements (minimal for this app).
 - Handling first‑run permissions if any future features require them.
 
 ### Effort (ballpark)
+
 - 3–5 days for a working signed/notarized DMG with native file dialogs and clipboard.
 - 1–2 extra days to automate CI builds and notarization.
-
 
 ## Windows (Direct distribution)
 
@@ -60,7 +61,8 @@ Assumptions:
   - Double‑click installer; optional Start Menu/Desktop shortcuts.
   - Unsigned builds show SmartScreen warnings; signing certificate improves trust.
 
-### Steps
+### Windows Steps
+
 1. Add Tauri to the project (or Electron, if preferred).
 2. Use Tauri APIs for file dialogs and clipboard (replace browser‑only calls).
 3. App identity: product name, version, icons.
@@ -71,15 +73,16 @@ Assumptions:
    - Recommended: sign with an Authenticode certificate (EV improves SmartScreen reputation).
    - Internal use: unsigned is acceptable; expect SmartScreen prompts.
 
-### Challenges
+### Windows Challenges
+
 - SmartScreen reputation for unsigned/new binaries.
 - Updater hosting (if we enable auto‑updates) – e.g., GitHub Releases or S3.
 - File path differences vs browser; ensure we always use user‑chosen paths.
 
-### Effort (ballpark)
+### Windows Effort (ballpark)
+
 - 3–5 days to produce a usable installer with native file dialogs and clipboard.
 - +1–2 days to wire up auto‑update and signing in CI.
-
 
 ## Shared Work Items (macOS + Windows)
 
@@ -94,13 +97,13 @@ Assumptions:
 - CI pipelines (GitHub Actions) with separate jobs for macOS and Windows builds, optional signing.
 - Icons and branding for both platforms.
 
-
 ## What We Don’t Need (yet)
+
 - App Store listings (Mac App Store / Microsoft Store) – parked.
 - Deep OS integrations beyond dialogs/clipboard.
 
-
 ## Next Steps
+
 1. Introduce the platform adapter and swap `Save As…` to use it when in desktop mode.
 2. Scaffold Tauri, point to Vite build, and verify CSV export + clipboard.
 3. Produce unsigned builds first for internal testing.

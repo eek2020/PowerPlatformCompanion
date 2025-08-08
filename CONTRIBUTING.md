@@ -8,12 +8,9 @@ Thank you for your interest in contributing! This project is a React + TypeScrip
 2. Install dependencies and run the web app:
 
 ```bash
-cd web
 npm install
 npm run dev
 ```
-
-3. Open http://localhost:5173 and verify pages load.
 
 ## Project Structure
 
