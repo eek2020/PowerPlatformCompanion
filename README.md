@@ -1,6 +1,6 @@
 # PowerPlatformCompanion
 
-A MacOS companion to help with all things Power Platform
+A companion to help with all things Power Platform
 
 ## Documentation
 
