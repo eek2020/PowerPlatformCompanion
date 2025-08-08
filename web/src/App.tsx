@@ -14,6 +14,7 @@ import ResourcesPage from './pages/ResourcesPage'
 import DiagnosticsPage from './pages/DiagnosticsPage'
 import RoadmapPage from './pages/RoadmapPage'
 import IconsPage from './pages/IconsPage'
+import PlanningPage from './pages/PlanningPage'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/resources" element={<ResourcesPage />} />
         <Route path="/diagnostics" element={<DiagnosticsPage />} />
         <Route path="/roadmap" element={<RoadmapPage />} />
+        <Route path="/planning" element={<PlanningPage />} />
         <Route path="/icons" element={<IconsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/about" element={<AboutPage />} />

@@ -83,4 +83,15 @@ Snippets page cards (`web/src/pages/SnippetsPage.tsx`) are constrained with `max
 ## Extensibility
 
 - Each feature lives in its own page component under `web/src/pages/` with small utilities colocated or in `web/src/utils/`.
-- Future backend: add a lightweight API (Node/Express/Azure Functions) to support authenticated sources, telemetry, and RAG retrieval.
+- CSS is kept simple with a small number of utility rules in `web/src/index.css`.
+
+## Planning
+
+- Page: `web/src/pages/PlanningPage.tsx`.
+- Lets you add/edit items across categories (Power Platform/Azure/Other), T‑shirt size, quantity, and notes.
+- Data persists to `localStorage` under `mm.planning.v1`.
+- Exports the matrix to CSV with headers (Category, Component, T‑Shirt, Qty, Notes).
+
+## Future backend
+
+- Add a lightweight API (Node/Express/Azure Functions) to support authenticated sources, telemetry, and RAG retrieval.

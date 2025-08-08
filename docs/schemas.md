@@ -39,6 +39,7 @@ A lightweight validator exists in `web/src/utils/validators.ts`.
 
 ## Browser storage (localStorage)
 
+- `mm.planning.v1: PlanItem[]` — saved Planning items.
 - `mm.notifyWindowMonths: number` — roadmap notification window in months.
 - `mm.roadmap.cache.v1: RoadmapItem[]` — cached local roadmap items.
 - `mm.roadmap.cacheAt: number` — timestamp of local roadmap cache.
