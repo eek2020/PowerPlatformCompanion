@@ -29,6 +29,7 @@ These are available in the React app under `web/` and surfaced via the left side
 - **Diagnostics (new)**: Error message helper with seed heuristics for context and next steps. Planned: inline fixes and diffs.
 - **Roadmap (new)**: Reformatted view with search/filter and due‑soon notifications. Loads from `web/public/roadmap.example.json` (placeholder until wired to official source).
 - **Settings (enhanced)**: Controls the roadmap notification window in months, persisted in `localStorage` key `mm.notifyWindowMonths`.
+- **Icons (new)**: Browse a small built‑in set, customise (size/stroke/colour), import your SVG, and copy as SVG/Data URI/Power Apps Image formula. Route: `/icons`.
 
 ### Data files
 

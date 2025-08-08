@@ -43,6 +43,10 @@ export default function NavBar() {
           <span className="nav__icon">🌐</span>
           <span className="nav__label">Resources</span>
         </NavLink>
+        <NavLink to="/icons" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+          <span className="nav__icon">🎨</span>
+          <span className="nav__label">Icons</span>
+        </NavLink>
         <NavLink to="/diagnostics" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
           <span className="nav__icon">🩺</span>
           <span className="nav__label">Diagnostics</span>
