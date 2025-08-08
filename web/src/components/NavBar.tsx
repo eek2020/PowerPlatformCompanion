@@ -4,6 +4,7 @@ import './NavBar.css'
 
 export default function NavBar() {
   const [collapsed, setCollapsed] = useState(false)
+  const [estimatingOpen, setEstimatingOpen] = useState(true)
 
   useEffect(() => {
     const cls = 'sidebar-collapsed'
@@ -60,19 +61,38 @@ export default function NavBar() {
               <span className="nav__label">Resources</span>
             </NavLink>
           </li>
-          <li className="nav__section" aria-label="Estimating">Estimating</li>
-          <li>
-            <NavLink to="/planning" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-              <span className="nav__icon">🗓️</span>
-              <span className="nav__label">Planning</span>
-            </NavLink>
+          <li className="nav__section" aria-label="Estimating">
+            <button
+              className="nav__section__toggle"
+              aria-expanded={estimatingOpen}
+              aria-controls="estimating-group"
+              onClick={() => setEstimatingOpen(v => !v)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                width: '100%', background: 'transparent', border: 'none', color: 'inherit',
+                cursor: 'pointer', padding: 0, font: 'inherit', textAlign: 'left'
+              }}
+            >
+              <span>{estimatingOpen ? '▾' : '▸'}</span>
+              <span>Estimating</span>
+            </button>
           </li>
-          <li>
-            <NavLink to="/licensing" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-              <span className="nav__icon">🧾</span>
-              <span className="nav__label">Licensing</span>
-            </NavLink>
-          </li>
+          {estimatingOpen && (
+            <>
+              <li>
+                <NavLink to="/planning" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+                  <span className="nav__icon">🗓️</span>
+                  <span className="nav__label">Planning</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/licensing" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+                  <span className="nav__icon">🧾</span>
+                  <span className="nav__label">Licensing</span>
+                </NavLink>
+              </li>
+            </>
+          )}
           <li>
             <NavLink to="/icons" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
               <span className="nav__icon">🎨</span>
