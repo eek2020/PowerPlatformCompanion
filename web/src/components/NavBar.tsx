@@ -36,9 +36,9 @@ const IconGlobe = () => (
   </svg>
 )
 const IconGear = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true" className="rail__icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z"/>
-    <path d="M3 12h2M19 12h2M12 3v2M12 19v2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M5 19l1.5-1.5"/>
+  <svg viewBox="0 0 24 24" aria-hidden="true" className="rail__icon" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11.25 2.25c.41 0 .75.34.75.75v1.38a5.24 5.24 0 0 1 2.06.85l1.22-.7a.75.75 0 0 1 .98.27l.75 1.3a.75.75 0 0 1-.26 1.02l-1.19.69c.12.34.21.7.27 1.07l1.38.23c.36.06.63.37.63.74v1.5c0 .37-.27.68-.63.74l-1.38.23c-.06.37-.15.73-.27 1.07l1.19.69c.35.2.47.64.27.99l-.75 1.3a.75.75 0 0 1-.98.27l-1.22-.7c-.63.36-1.32.64-2.06.85v1.38c0 .41-.34.75-.75.75h-1.5a.75.75 0 0 1-.75-.75v-1.38a5.24 5.24 0 0 1-2.06-.85l-1.22.7a.75.75 0 0 1-.98-.27l-.75-1.3a.75.75 0 0 1 .26-1.02l1.19-.69a8.2 8.2 0 0 1-.27-1.07l-1.38-.23a.75.75 0 0 1-.63-.74v-1.5c0-.37.27-.68.63-.74l1.38-.23c.06-.37.15-.73.27-1.07l-1.19-.69a.75.75 0 0 1-.27-1l.75-1.31a.75.75 0 0 1 .99-.27l1.22.7c.63-.36 1.32-.64 2.06-.85V3c0-.41.34-.75.75-.75h1.5Z"/>
+    <circle cx="12" cy="12" r="3"/>
   </svg>
 )
 export default function NavBar() {
