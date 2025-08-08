@@ -40,19 +40,24 @@
 .sidebar.collapsed .nav__label { opacity: 0; width: 0; overflow: hidden; }
 
 /* Two-panel layout */
-.sidebar__container { display: grid; grid-template-columns: 64px 1fr; gap: 0.5rem; align-items: stretch; }
-.sidebar__rail { display: grid; grid-auto-rows: 40px; align-content: start; gap: 6px; padding-top: 6px; }
-.rail__btn { display: grid; place-items: center; width: 40px; height: 40px; margin: 0 auto; border-radius: 10px; background: transparent; border: 1px solid transparent; color: #bfc7e0; cursor: pointer; }
+.sidebar__container { display: grid; grid-template-columns: 72px 1fr; gap: 0.5rem; align-items: stretch; }
+.sidebar__rail { display: grid; grid-auto-rows: 56px; align-content: start; gap: 10px; padding-top: 6px; }
+.rail__btn { display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto; border-radius: 12px; background: transparent; border: 1px solid transparent; color: #c9d6f0; cursor: pointer; }
 .rail__btn:hover { background: #16213a; color: #fff; border-color: #2b3a66; }
 .rail__btn.active { background: #3a506b; color: #fff; border-color: #3a506b; }
-.rail__icon { font-size: 1.1rem; line-height: 1; }
+.rail__icon { width: 28px; height: 28px; display: block; }
+.rail__btn:focus-visible { outline: 2px solid #3a506b; outline-offset: 2px; }
 
-.sidebar__panel { background: rgba(255,255,255,0.03); border: 1px solid #1f2b4a; border-radius: 12px; padding: 8px; overflow: auto; }
+.sidebar__panel { background: rgba(255,255,255,0.03); border: 1px solid #1f2b4a; border-radius: 0; padding: 8px; overflow: auto; }
 .panel__list { list-style: none; margin: 0; padding: 4px; display: grid; gap: 2px; }
 .panel__title { padding: 6px 8px; color: #9fb3d9; font-size: 0.85rem; letter-spacing: 0.2px; }
 .panel__item { display: block; color: #bfc7e0; text-decoration: none; padding: 8px 10px; border-radius: 8px; transition: background 120ms ease, color 120ms ease; }
 .panel__item:hover { background: #16213a; color: #fff; }
 .panel__item.active { background: #3a506b; color: #fff; }
+
+/* Collapsed behavior: hide panel and compress grid to rail only */
+.sidebar.collapsed .sidebar__container { grid-template-columns: 72px; }
+.sidebar.collapsed .sidebar__panel { display: none; }
 
 .sidebar__footer { margin-top: auto; opacity: 0.7; font-size: 0.8rem; text-align: center; }
 

@@ -2,6 +2,45 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import './NavBar.css'
 
+// Outline SVG icons (monochrome, scalable)
+const IconHome = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className="rail__icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 11.5 12 4l9 7.5"/>
+    <path d="M5.5 10v9a1 1 0 0 0 1 1H17.5a1 1 0 0 0 1-1v-9"/>
+  </svg>
+)
+const IconCalc = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className="rail__icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="4" y="3" width="16" height="18" rx="2"/>
+    <path d="M8 7h8"/>
+    <path d="M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 17.5h8"/>
+  </svg>
+)
+const IconAlert = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className="rail__icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>
+    <path d="M12 9v5"/>
+    <path d="M12 17h.01"/>
+  </svg>
+)
+const IconWrench = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className="rail__icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14.7 6.3a4.5 4.5 0 0 1 4.98-1.02L16 8.96l-.04.04L8.96 16l-2.68 2.68a2 2 0 0 1-2.83-2.83L6.41 13l7.55-7.55c.25.31.48.64.74.85Z"/>
+  </svg>
+)
+const IconGlobe = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className="rail__icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M3 12h18"/>
+    <path d="M12 3c3 3.5 3 14.5 0 18M12 3C9 6.5 9 17.5 12 21"/>
+  </svg>
+)
+const IconGear = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className="rail__icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z"/>
+    <path d="M3 12h2M19 12h2M12 3v2M12 19v2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M5 19l1.5-1.5"/>
+  </svg>
+)
 export default function NavBar() {
   const [collapsed, setCollapsed] = useState(false)
   const location = useLocation()
@@ -46,22 +85,22 @@ export default function NavBar() {
       <div className="sidebar__container">
         <aside className="sidebar__rail" aria-label="Primary sections">
           <button className={activeRail==='home'? 'rail__btn active':'rail__btn'} onClick={() => setActiveRail('home')} aria-label="Home">
-            <span className="rail__icon">🏠</span>
+            <IconHome />
           </button>
           <button className={activeRail==='estimating'? 'rail__btn active':'rail__btn'} onClick={() => setActiveRail('estimating')} aria-label="Estimating">
-            <span className="rail__icon">🧮</span>
+            <IconCalc />
           </button>
           <button className={activeRail==='error'? 'rail__btn active':'rail__btn'} onClick={() => setActiveRail('error')} aria-label="Error Help">
-            <span className="rail__icon">🛟</span>
+            <IconAlert />
           </button>
           <button className={activeRail==='tools'? 'rail__btn active':'rail__btn'} onClick={() => setActiveRail('tools')} aria-label="Tools">
-            <span className="rail__icon">🧰</span>
+            <IconWrench />
           </button>
           <button className={activeRail==='resources'? 'rail__btn active':'rail__btn'} onClick={() => setActiveRail('resources')} aria-label="Resources">
-            <span className="rail__icon">🌐</span>
+            <IconGlobe />
           </button>
           <button className={activeRail==='settings'? 'rail__btn active':'rail__btn'} onClick={() => setActiveRail('settings')} aria-label="Settings">
-            <span className="rail__icon">⚙️</span>
+            <IconGear />
           </button>
         </aside>
         {!collapsed && (
@@ -102,7 +141,6 @@ export default function NavBar() {
                 <li className="panel__title">Resources</li>
                 <li><NavLink to="/icons" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Icons</NavLink></li>
                 <li><NavLink to="/roadmap" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Roadmap</NavLink></li>
-                <li><NavLink to="/about" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>About</NavLink></li>
               </ul>
             )}
             {activeRail === 'settings' && (
