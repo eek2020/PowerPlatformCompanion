@@ -62,11 +62,23 @@ Snippets page cards (`web/src/pages/SnippetsPage.tsx`) are constrained with `max
 
 - Enable via `VITE_M365_SOURCE=on` (e.g. in `web/.env.local`).
 - Dev-only Vite proxy maps `/api/m365` → `https://www.microsoft.com/releasecommunications/api/v1/m365` to avoid CORS.
+- Production uses a Netlify Function at `/.netlify/functions/m365` with a redirect from `/api/m365` (see `netlify.toml` and `netlify/functions/m365.ts`).
 - When enabled, fetches from `/api/m365`, maps items into the internal `RoadmapItem` shape, and caches under:
   - `mm.roadmap.m365.cache.v1`
   - `mm.roadmap.m365.cacheAt`
 - If API is unavailable or returns no items, falls back to local JSON and embedded examples.
 - Deep link uses the API-provided `link` when present; otherwise falls back to `https://roadmap.microsoft.com/?search=<title+area>`.
+
+#### Enable in dev
+
+1. Create `web/.env.local` with `VITE_M365_SOURCE=on`.
+2. Run the dev server; the Vite proxy serves `/api/m365`.
+
+#### Enable in production (Netlify)
+
+1. Ensure `netlify.toml` is present at repo root (functions dir + redirects configured).
+2. Deploy on Netlify; the function proxy is available at `/api/m365`.
+3. Set `VITE_M365_SOURCE=on` in the site env variables.
 
 ## Extensibility
 
