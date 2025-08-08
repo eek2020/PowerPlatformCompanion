@@ -1,18 +1,41 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { snippetsMock, type Snippet } from '../data/snippetsMock'
 
 export default function SnippetsPage() {
   const [query, setQuery] = useState('')
+  const [snippets, setSnippets] = useState<Snippet[] | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let active = true
+    const load = async () => {
+      try {
+        const res = await fetch('/snippets.example.json', { cache: 'no-store' })
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const data = await res.json()
+        if (active) setSnippets(data as Snippet[])
+      } catch (e: any) {
+        // Fallback to embedded mock
+        if (active) {
+          setError('Using embedded examples (could not load public JSON).')
+          setSnippets(snippetsMock)
+        }
+      }
+    }
+    load()
+    return () => { active = false }
+  }, [])
 
   const filtered: Snippet[] = useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return snippetsMock
-    return snippetsMock.filter(s =>
+    const source = snippets ?? snippetsMock
+    if (!q) return source
+    return source.filter(s =>
       s.title.toLowerCase().includes(q) ||
       s.tags.some(t => t.toLowerCase().includes(q)) ||
       s.code.toLowerCase().includes(q)
     )
-  }, [query])
+  }, [query, snippets])
 
   const copy = async (text: string) => {
     try {
@@ -27,6 +50,8 @@ export default function SnippetsPage() {
   return (
     <main className="container">
       <h1>Power Fx Snippets</h1>
+      {error && <p style={{ color: '#ffb703' }}>{error}</p>}
+      {!snippets && <p>Loading examples…</p>}
       <label htmlFor="snip-search">Search</label>
       <input id="snip-search" type="search" placeholder="Filter by title, tag, or code…" value={query} onChange={e => setQuery(e.target.value)} />
       <div style={{ marginTop: '1rem', display: 'grid', gap: '1rem' }}>
