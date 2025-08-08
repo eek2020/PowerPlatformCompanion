@@ -191,18 +191,30 @@ export default function PlanningPage() {
                     <input value={i.component} onChange={e => update(i.id, { component: e.target.value })} style={{ width: '100%' }} placeholder="Component" />
                   )}
                 </td>
-                <td style={{ padding: '0.25rem 0', minWidth: 160 }}>
-                  <select value={i.complexity} onChange={e => update(i.id, { complexity: e.target.value as Complexity })}>
-                    {complexities.map(c => <option key={c}>{c}</option>)}
-                  </select>
-                  <button title="Guidance" aria-label="Guidance" onClick={() => setGuideId(i.id)} style={{ marginLeft: 8 }}>ℹ️</button>
+                <td style={{ padding: '0.25rem 0', minWidth: 180 }}>
+                  <div style={{ position: 'relative', display: 'inline-block' }}>
+                    {/* reserve space so overlay icon doesn't overlap text */}
+                    <div style={{ paddingRight: 28 }}>
+                      <select value={i.complexity} onChange={e => update(i.id, { complexity: e.target.value as Complexity })}>
+                        {complexities.map(c => <option key={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <button
+                      title="Guidance"
+                      aria-label="Guidance"
+                      onClick={() => setGuideId(i.id)}
+                      style={{ position: 'absolute', right: 6, top: 4, width: 18, height: 18, lineHeight: '18px', textAlign: 'center', border: 'none', background: 'transparent', color: 'inherit', cursor: 'pointer', padding: 0 }}
+                    >
+                      ℹ️
+                    </button>
+                  </div>
                 </td>
                 <td style={{ padding: '0.25rem 0' }}>
                   <select value={i.size} onChange={e => update(i.id, { size: e.target.value as TShirt })}>
                     {sizes.map(s => <option key={s}>{s}</option>)}
                   </select>
                 </td>
-                <td style={{ padding: '0.25rem 0' }}>
+                <td style={{ padding: '0.25rem 0', textAlign: 'center', minWidth: 90 }}>
                   <span>{sizeHours[i.size] ?? 0} h</span>
                 </td>
                 <td style={{ padding: '0.25rem 0' }}>
