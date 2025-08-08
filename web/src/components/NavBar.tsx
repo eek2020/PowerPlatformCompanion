@@ -27,6 +27,10 @@ export default function NavBar() {
           <span className="nav__icon">📄</span>
           <span className="nav__label">Snippets</span>
         </NavLink>
+        <NavLink to="/expression" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+          <span className="nav__icon">🧪</span>
+          <span className="nav__label">Expression Tester</span>
+        </NavLink>
         <NavLink to="/delegation" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
           <span className="nav__icon">🔍</span>
           <span className="nav__label">Delegation Check</span>
@@ -34,6 +38,26 @@ export default function NavBar() {
         <NavLink to="/formatter" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
           <span className="nav__icon">🧰</span>
           <span className="nav__label">Flow Formatter</span>
+        </NavLink>
+        <NavLink to="/packs" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+          <span className="nav__icon">📦</span>
+          <span className="nav__label">Packs</span>
+        </NavLink>
+        <NavLink to="/dataverse" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+          <span className="nav__icon">🗂️</span>
+          <span className="nav__label">Dataverse Lookup</span>
+        </NavLink>
+        <NavLink to="/licensing" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+          <span className="nav__icon">🧾</span>
+          <span className="nav__label">Licensing</span>
+        </NavLink>
+        <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+          <span className="nav__icon">⚙️</span>
+          <span className="nav__label">Settings</span>
+        </NavLink>
+        <NavLink to="/about" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+          <span className="nav__icon">ℹ️</span>
+          <span className="nav__label">About</span>
         </NavLink>
       </nav>
       <div className="sidebar__footer">
