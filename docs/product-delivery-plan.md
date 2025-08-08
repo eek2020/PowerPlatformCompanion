@@ -1,5 +1,9 @@
 # Product & Delivery Plan
 
+> Note: This document is superseded. See canonical plans:
+> - High-level phases & history: `docs/plan-high-level.md`
+> - Detailed actions & tasks: `docs/plan-detailed-tasks.md`
+
 This plan consolidates vision, scope, feature set, status, architecture decisions, delivery milestones, and operational concerns (security, auth, keys, data, deployment, error handling, user docs) for PowerPlatformCompanion.
 
 ## Vision & Goals
