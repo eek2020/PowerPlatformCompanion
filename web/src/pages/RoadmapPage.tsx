@@ -7,6 +7,7 @@ export type RoadmapItem = {
   status: 'Planned' | 'Rolling out' | 'Launched' | 'In development'
   due: string // ISO date
   link?: string
+  description?: string
 }
 
 // View model used after filtering/mapping where `due` becomes a Date and we add flags
@@ -62,8 +63,8 @@ export default function RoadmapPage() {
         if (active && !raw) {
           setError('Using embedded examples (failed to load roadmap).')
           applyData([
-            { id: 'rm1', title: 'Power Fx improvements', area: 'Power Apps', status: 'In development', due: new Date().toISOString(), link: 'https://roadmap.microsoft.com' },
-            { id: 'rm2', title: 'Dataverse performance', area: 'Dataverse', status: 'Planned', due: new Date(new Date().setMonth(new Date().getMonth()+1)).toISOString() }
+            { id: 'rm1', title: 'Power Fx improvements', area: 'Power Apps', status: 'In development', due: new Date().toISOString(), link: 'https://roadmap.microsoft.com', description: 'Enhancements to Power Fx functions, performance, and editor experience.' },
+            { id: 'rm2', title: 'Dataverse performance', area: 'Dataverse', status: 'Planned', due: new Date(new Date().setMonth(new Date().getMonth()+1)).toISOString(), description: 'Query optimisations and improved concurrency for high-throughput apps.' }
           ])
         }
       }
@@ -114,6 +115,50 @@ export default function RoadmapPage() {
 
   const areas = useMemo(() => Array.from(new Set((items ?? []).map(i => i.area))), [items])
 
+  // Simple icon svgs
+  const svgAutomate = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e9efff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 7l6 5-6 5V7z"/><path d="M10 7h6l-6 5 6 5h-6l-6-5 6-5z" fill="none" /></svg>'
+  const svgApps = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e9efff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><polygon points="12 3 21 12 12 21 3 12 12 3" fill="none"/><polygon points="12 6.5 17.5 12 12 17.5 6.5 12 12 6.5" /></svg>'
+  const svgDataverse = '<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#e9efff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8z"/><path d="M7 12a5 5 0 0010 0 5 5 0 00-10 0z"/></svg>'
+
+  // Compute deep link: prefer provided `link`; otherwise fallback to search
+  const computeLink = (it: { title: string; area: string; link?: string }) => {
+    if (it.link && it.link.trim()) return it.link
+    const q = encodeURIComponent(`${it.title} ${it.area}`)
+    // Fallback search to Microsoft Roadmap filtered by query
+    return `https://roadmap.microsoft.com/?search=${q}`
+  }
+
+  // Lightweight modal for details
+  const RoadmapModal = ({ item, onClose }: { item: RoadmapVM; onClose: () => void }) => {
+    useEffect(() => {
+      const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+      window.addEventListener('keydown', onKey)
+      return () => window.removeEventListener('keydown', onKey)
+    }, [onClose])
+    return (
+      <div aria-hidden={false} role="dialog" aria-modal="true" aria-labelledby="rm-modal-title"
+           onClick={(e) => { if (e.currentTarget === e.target) onClose() }}
+           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'grid', placeItems: 'center', zIndex: 999 }}>
+        <div style={{ background: 'var(--mm-surface, #0e1a3a)', color: '#e9efff', lineHeight: 1.5, border: '1px solid #2f2f2f', borderRadius: 10, width: 'min(720px, 92vw)', maxHeight: '85vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, padding: '0.9rem 1rem', borderBottom: '1px solid #2f2f2f' }}>
+            <h2 id="rm-modal-title" style={{ margin: 0, color: '#fff' }}>{item.title}</h2>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <a className="nav__item" href={computeLink(item)} target="_blank" rel="noreferrer">Open</a>
+              <button onClick={onClose}>Close</button>
+            </div>
+          </header>
+          <div style={{ padding: '0.9rem 1rem' }}>
+            <p style={{ opacity: 0.85, margin: '0 0 6px' }}>Area: <strong>{item.area}</strong></p>
+            <p style={{ opacity: 0.85, margin: '0 0 6px' }}>Status: <strong>{item.status}</strong></p>
+            <p style={{ opacity: 0.85, margin: 0 }}>Due: <strong>{new Date(item.due).toLocaleDateString()}</strong></p>
+            <hr style={{ borderColor: '#2f2f2f', margin: '0.9rem 0' }} />
+            <p style={{ margin: 0, opacity: 0.95 }}>{item.description || 'No additional details provided.'}</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <main className="container">
       <h1>Power Platform Roadmap</h1>
@@ -135,6 +180,22 @@ export default function RoadmapPage() {
           <input id="rm-window" type="number" min={0} max={12} value={notifyMonths} onChange={e => setNotifyMonths(Number(e.target.value))} />
         </div>
       </div>
+      {/* Icon filters for common areas */}
+      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+        <button aria-pressed={area===''} onClick={() => setArea('')} style={{ display: 'flex', alignItems: 'center', gap: 6, border: area==='' ? '2px solid #5aa0ff' : '1px solid #2b3a66', borderRadius: 8, padding: '4px 8px', background: 'transparent' }}>All</button>
+        <button aria-label="Filter: Power Automate" aria-pressed={area==='Power Automate'} onClick={() => setArea('Power Automate')} style={{ display: 'flex', alignItems: 'center', gap: 6, border: area==='Power Automate' ? '2px solid #5aa0ff' : '1px solid #2b3a66', borderRadius: 8, padding: '4px 8px', background: 'transparent' }}>
+          <span dangerouslySetInnerHTML={{ __html: svgAutomate }} />
+          <small className="help">Power Automate</small>
+        </button>
+        <button aria-label="Filter: Power Apps" aria-pressed={area==='Power Apps'} onClick={() => setArea('Power Apps')} style={{ display: 'flex', alignItems: 'center', gap: 6, border: area==='Power Apps' ? '2px solid #5aa0ff' : '1px solid #2b3a66', borderRadius: 8, padding: '4px 8px', background: 'transparent' }}>
+          <span dangerouslySetInnerHTML={{ __html: svgApps }} />
+          <small className="help">Power Apps</small>
+        </button>
+        <button aria-label="Filter: Dataverse" aria-pressed={area==='Dataverse'} onClick={() => setArea('Dataverse')} style={{ display: 'flex', alignItems: 'center', gap: 6, border: area==='Dataverse' ? '2px solid #5aa0ff' : '1px solid #2b3a66', borderRadius: 8, padding: '4px 8px', background: 'transparent' }}>
+          <span dangerouslySetInnerHTML={{ __html: svgDataverse }} />
+          <small className="help">Dataverse</small>
+        </button>
+      </div>
       <div style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem', gridTemplateColumns: 'minmax(0,1fr)', maxWidth: '100%' }}>
         {filtered.map(i => (
           <article key={i.id} style={{ border: '1px solid #2f2f2f', borderRadius: 8, padding: '0.75rem 1rem', maxWidth: '100%' }}>
@@ -147,28 +208,14 @@ export default function RoadmapPage() {
                 {i.dueThisOrPrev && <span style={{ color: '#ff6b6b' }}>Due now/recent</span>}
                 {i.dueSoon && <span style={{ color: '#ffb703' }}>Due soon</span>}
                 <button onClick={() => setSelected(i as RoadmapVM)}>View</button>
-                {i.link && <a className="nav__item" href={i.link} target="_blank" rel="noreferrer">Open</a>}
+                <a className="nav__item" href={computeLink(i)} target="_blank" rel="noreferrer">Open</a>
               </div>
             </header>
           </article>
         ))}
         {filtered.length === 0 && <p>No roadmap items match your filters.</p>}
       </div>
-      {selected && (
-        <section aria-live="polite" style={{ marginTop: '1rem', border: '1px solid #2f2f2f', borderRadius: 8, padding: '0.75rem 1rem', maxWidth: '100%' }}>
-          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <h2 style={{ margin: 0 }}>{selected.title}</h2>
-            <div style={{ display: 'flex', gap: 8 }}>
-              {selected.link && <a className="nav__item" href={selected.link} target="_blank" rel="noreferrer">Open</a>}
-              <button onClick={() => setSelected(null)}>Close</button>
-            </div>
-          </header>
-          <p style={{ opacity: 0.85, marginTop: 6 }}>Area: <strong>{selected.area}</strong></p>
-          <p style={{ opacity: 0.85 }}>Status: <strong>{selected.status}</strong></p>
-          <p style={{ opacity: 0.85 }}>Due: <strong>{new Date(selected.due).toLocaleDateString()}</strong></p>
-          {!selected.link && <small className="help">No external link provided.</small>}
-        </section>
-      )}
+      {selected && <RoadmapModal item={selected} onClose={() => setSelected(null)} />}
       <small className="help">Auto-refresh every 30 minutes (with 6h cache). Select an item to view details.</small>
     </main>
   )
