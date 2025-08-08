@@ -1,5 +1,7 @@
 # Roadmap
 
+See also: `docs/product-delivery-plan.md` for the comprehensive product and delivery plan (vision, features, security, deployment, desktop, DB, error handling, user guide, etc.).
+
 ## Progress 2025-08-08
 
 - Verified local app boot via Vite (`npm run dev`) in `web/`.
