@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export default function SettingsPage() {
   const [notifyMonths, setNotifyMonths] = useState<number>(() => {
@@ -6,9 +6,40 @@ export default function SettingsPage() {
     return Number.isFinite(v) && v >= 0 ? v : 1
   })
 
+  type ComponentsConfig = { 'Power Platform': string[]; Azure: string[] }
+  const DEFAULT_COMPONENTS: ComponentsConfig = {
+    'Power Platform': ['Power Apps', 'Power Automate', 'Power BI', 'Power Pages', 'Dataverse'],
+    Azure: ['Functions', 'Key Vault', 'App Service', 'Storage Account', 'Service Bus']
+  }
+  const COMPONENTS_KEY = 'mm.planning.components.v1'
+
+  const [ppList, setPpList] = useState<string>(() => {
+    try {
+      const raw = localStorage.getItem(COMPONENTS_KEY)
+      if (raw) return (JSON.parse(raw) as ComponentsConfig)['Power Platform'].join(', ')
+    } catch {}
+    return DEFAULT_COMPONENTS['Power Platform'].join(', ')
+  })
+  const [azList, setAzList] = useState<string>(() => {
+    try {
+      const raw = localStorage.getItem(COMPONENTS_KEY)
+      if (raw) return (JSON.parse(raw) as ComponentsConfig).Azure.join(', ')
+    } catch {}
+    return DEFAULT_COMPONENTS.Azure.join(', ')
+  })
+
+  const parsedConfig: ComponentsConfig = useMemo(() => {
+    const norm = (s: string) => s.split(',').map(x => x.trim()).filter(Boolean)
+    return { 'Power Platform': norm(ppList), Azure: norm(azList) }
+  }, [ppList, azList])
+
   useEffect(() => {
     localStorage.setItem('mm.notifyWindowMonths', String(notifyMonths))
   }, [notifyMonths])
+
+  useEffect(() => {
+    localStorage.setItem(COMPONENTS_KEY, JSON.stringify(parsedConfig))
+  }, [parsedConfig])
 
   return (
     <main className="container">
@@ -26,6 +57,22 @@ export default function SettingsPage() {
             onChange={e => setNotifyMonths(Math.max(0, Math.min(12, Number(e.target.value))))}
           />
           <small className="help">Controls how far ahead/behind to flag items as "Due soon" or "Due now/recent" on the Roadmap.</small>
+        </div>
+
+        <div>
+          <h2 style={{ fontSize: '1.1rem' }}>Planning components</h2>
+          <label htmlFor="set-pp">Power Platform components (comma‑separated)</label>
+          <input id="set-pp" value={ppList} onChange={e => setPpList(e.target.value)} />
+          <small className="help">Shown in Planning when category is Power Platform.</small>
+          <label htmlFor="set-az" style={{ marginTop: 8, display: 'block' }}>Azure components (comma‑separated)</label>
+          <input id="set-az" value={azList} onChange={e => setAzList(e.target.value)} />
+          <small className="help">Shown in Planning when category is Azure.</small>
+          <div style={{ marginTop: 8, display: 'flex', gap: '0.5rem' }}>
+            <button onClick={() => { setPpList(DEFAULT_COMPONENTS['Power Platform'].join(', ')); setAzList(DEFAULT_COMPONENTS.Azure.join(', ')) }}>Reset to defaults</button>
+            <span style={{ alignSelf: 'center' }}>
+              <small>{parsedConfig['Power Platform'].length} PP / {parsedConfig.Azure.length} Azure</small>
+            </span>
+          </div>
         </div>
 
         <div>
