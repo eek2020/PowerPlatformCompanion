@@ -81,3 +81,9 @@ Authoritative task list tracking what has happened, what is in progress, and wha
 - High-level plan: `docs/plan-high-level.md`
 - Specs: `docs/solution-architecture.md` (superseded by high-level + this doc for planning; still useful for detail)
 - Product plan (superseded): `docs/product-delivery-plan.md`
+
+## Next Options
+
+- Fine-tune content in `docs/plan-high-level.md` by folding in additional historical events/decisions as they arise.
+- Issue tracking: generate GitHub issues from this document with appropriate labels (Licensing, Requirements, AI, HLD, ARM, ERD, Security, Prod, Desktop, Docs, Testing) and milestones.
+- Prioritization: assign target milestones/dates per task group and sequence MVP vs stretch.

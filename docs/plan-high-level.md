@@ -48,3 +48,9 @@ A companion for Solution Architects to plan, design, and validate Microsoft solu
 ## References
 - Detailed tasks: `docs/plan-detailed-tasks.md`
 - Previous docs merged here: `docs/product-delivery-plan.md` (superseded), `docs/solution-architecture.md` (superseded).
+
+## Next Options
+
+- Fine-tune content: fold additional historical events/decisions into this document as they surface.
+- Issue tracking: generate GitHub issues from `docs/plan-detailed-tasks.md` with labels/milestones.
+- Prioritization: add target milestones/dates per task group (Requirements, HLD, ARM, ERD, Security/Prod).
