@@ -41,6 +41,7 @@ A lightweight validator exists in `web/src/utils/validators.ts`.
 
 - `mm.planning.v1: PlanItem[]` — saved Planning items.
 - `mm.planning.components.v1: { Power Platform: string[]; Azure: string[] }` — configurable component lists for cascading dropdowns.
+- `mm.planning.sizeHours.v1: { XS:number; S:number; M:number; L:number; XL:number }` — estimates in hours per T‑shirt size.
 - `mm.notifyWindowMonths: number` — roadmap notification window in months.
 - `mm.roadmap.cache.v1: RoadmapItem[]` — cached local roadmap items.
 - `mm.roadmap.cacheAt: number` — timestamp of local roadmap cache.

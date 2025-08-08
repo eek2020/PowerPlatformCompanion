@@ -12,6 +12,7 @@ export default function SettingsPage() {
     Azure: ['Functions', 'Key Vault', 'App Service', 'Storage Account', 'Service Bus']
   }
   const COMPONENTS_KEY = 'mm.planning.components.v1'
+  const SIZE_HOURS_KEY = 'mm.planning.sizeHours.v1'
 
   const [ppList, setPpList] = useState<string>(() => {
     try {
@@ -33,6 +34,16 @@ export default function SettingsPage() {
     return { 'Power Platform': norm(ppList), Azure: norm(azList) }
   }, [ppList, azList])
 
+  type SizeHours = { XS: number; S: number; M: number; L: number; XL: number }
+  const DEFAULT_SIZE_HOURS: SizeHours = { XS: 2, S: 8, M: 24, L: 56, XL: 120 }
+  const [sizeHours, setSizeHours] = useState<SizeHours>(() => {
+    try {
+      const raw = localStorage.getItem(SIZE_HOURS_KEY)
+      if (raw) return { ...DEFAULT_SIZE_HOURS, ...JSON.parse(raw) }
+    } catch {}
+    return DEFAULT_SIZE_HOURS
+  })
+
   useEffect(() => {
     localStorage.setItem('mm.notifyWindowMonths', String(notifyMonths))
   }, [notifyMonths])
@@ -40,6 +51,10 @@ export default function SettingsPage() {
   useEffect(() => {
     localStorage.setItem(COMPONENTS_KEY, JSON.stringify(parsedConfig))
   }, [parsedConfig])
+
+  useEffect(() => {
+    localStorage.setItem(SIZE_HOURS_KEY, JSON.stringify(sizeHours))
+  }, [sizeHours])
 
   return (
     <main className="container">
@@ -73,6 +88,19 @@ export default function SettingsPage() {
               <small>{parsedConfig['Power Platform'].length} PP / {parsedConfig.Azure.length} Azure</small>
             </span>
           </div>
+        </div>
+
+        <div>
+          <h2 style={{ fontSize: '1.1rem' }}>T‑shirt size estimates (hours)</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '0.5rem', maxWidth: 520 }}>
+            {(['XS','S','M','L','XL'] as const).map(k => (
+              <label key={k} style={{ display: 'grid', gap: 4 }}>
+                <span>{k}</span>
+                <input type="number" min={0} value={sizeHours[k]} onChange={e => setSizeHours({ ...sizeHours, [k]: Math.max(0, Number(e.target.value)) })} />
+              </label>
+            ))}
+          </div>
+          <small className="help">Used by Planning to compute an estimated time per row and total.</small>
         </div>
 
         <div>
