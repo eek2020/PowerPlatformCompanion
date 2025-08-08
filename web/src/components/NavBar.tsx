@@ -56,13 +56,8 @@ export default function NavBar() {
               aria-expanded={errorHelpOpen}
               aria-controls="error-help-group"
               onClick={() => setErrorHelpOpen(v => !v)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                width: '100%', background: 'transparent', border: 'none', color: 'inherit',
-                cursor: 'pointer', padding: 0, font: 'inherit', textAlign: 'left'
-              }}
             >
-              <span>{errorHelpOpen ? '▾' : '▸'}</span>
+              <span className="nav__icon caret">{errorHelpOpen ? '▾' : '▸'}</span>
               <span>Error Help</span>
             </button>
           </li>
@@ -94,13 +89,8 @@ export default function NavBar() {
               aria-expanded={estimatingOpen}
               aria-controls="estimating-group"
               onClick={() => setEstimatingOpen(v => !v)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                width: '100%', background: 'transparent', border: 'none', color: 'inherit',
-                cursor: 'pointer', padding: 0, font: 'inherit', textAlign: 'left'
-              }}
             >
-              <span>{estimatingOpen ? '▾' : '▸'}</span>
+              <span className="nav__icon caret">{estimatingOpen ? '▾' : '▸'}</span>
               <span>Estimating</span>
             </button>
           </li>

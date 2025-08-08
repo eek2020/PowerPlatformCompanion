@@ -27,11 +27,15 @@
 .sidebar__toggle:hover { background: #1c2541; color: #fff; }
 
 .sidebar__nav { display: grid; gap: 0.25rem; margin-top: 0.5rem; }
-.nav__list { list-style: none; margin: 0; padding: 0; }
+.nav__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
+.nav__section { margin-top: 0.6rem; color: #9fb3d9; font-size: 0.85rem; }
+.nav__section__toggle { display: flex; align-items: center; gap: 0.75rem; width: 100%; background: transparent; border: none; color: #bfc7e0; cursor: pointer; padding: 0.6rem 0.65rem; border-radius: 10px; text-align: left; font: inherit; }
+.nav__section__toggle:hover { background: #16213a; color: #fff; }
 .nav__item { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.65rem; color: #bfc7e0; text-decoration: none; border-radius: 10px; transition: background 120ms ease, color 120ms ease, transform 120ms ease; }
 .nav__item:hover { background: #16213a; color: #fff; transform: translateX(2px); }
 .nav__item.active { background: #3a506b; color: #fff; }
-.nav__icon { width: 1.5em; text-align: center; }
+.nav__icon { width: 1.5em; min-width: 1.5em; text-align: center; }
+.nav__icon.caret { color: #9fb3d9; }
 .nav__label { white-space: nowrap; }
 .sidebar.collapsed .nav__label { opacity: 0; width: 0; overflow: hidden; }
 
