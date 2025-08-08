@@ -88,10 +88,24 @@ Snippets page cards (`web/src/pages/SnippetsPage.tsx`) are constrained with `max
 ## Planning
 
 - Page: `web/src/pages/PlanningPage.tsx`.
-- Lets you add/edit items across categories (Power Platform/Azure/Other), T‑shirt size, quantity, and notes.
+- Add/edit items across categories (Power Platform/Azure/Other) with cascading component dropdowns.
+- Fields: Category, Component, Complexity (Simple/Moderate/Complex), T‑shirt size (XS‑XL).
+- Inline ℹ️ opens an accessible guidance modal per component to help choose complexity.
+- Estimated hours per row are derived from T‑shirt size; a total is shown for all rows.
 - Data persists to `localStorage` under `mm.planning.v1`.
-- Exports the matrix to CSV with headers (Category, Component, T‑Shirt, Qty, Notes).
+- CSV export headers: `Category, Component, Complexity, T‑Shirt, EstHours`.
+- Configurable via Settings (`web/src/pages/SettingsPage.tsx`):
+  - Component lists: `mm.planning.components.v1` for Power Platform/Azure.
+  - Size→hours mapping: `mm.planning.sizeHours.v1`.
 
 ## Future backend
 
 - Add a lightweight API (Node/Express/Azure Functions) to support authenticated sources, telemetry, and RAG retrieval.
+
+## Accessibility
+
+- WCAG 2.2 improvements:
+  - Skip link and main landmark in `App.tsx` (`<a class="skip-link">`, `role="main"`, focus target for keyboard users).
+  - Clear keyboard focus with `:focus-visible` in `web/src/App.css`.
+  - `NavBar.tsx` uses `<nav role="navigation" aria-label="Primary">` and a semantic `<ul>/<li>` list; the collapse toggle exposes `aria-expanded` and `aria-controls`.
+  - Guidance modal: labeled (`aria-labelledby`/`aria-describedby`), focus-trapped, Escape/backdrop close, and returns focus to invoker.
