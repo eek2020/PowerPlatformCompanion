@@ -49,3 +49,8 @@ These are available in the React app under `web/` and surfaced via the left side
 
 - Discovery/recommendation for Resources and official Roadmap ingestion are planned next steps.
 - All features are designed to be testable and progressively enhanced.
+
+## M365 Public Roadmap integration
+
+- Dev: create `web/.env.local` with `VITE_M365_SOURCE=on`. The dev server proxies `/api/m365` to Microsoft to avoid CORS.
+- Prod (Netlify): `netlify.toml` config and `netlify/functions/m365.ts` provide a proxy at `/api/m365`. Set `VITE_M365_SOURCE=on` in site env.
