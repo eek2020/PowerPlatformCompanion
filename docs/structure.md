@@ -2,7 +2,7 @@
 
 High‑level folders and purpose.
 
-```
+```text
 PowerPlatformCompanion-1/
 ├─ web/                     # React + TS app (Vite)
 │  ├─ public/               # Static assets and example JSON data

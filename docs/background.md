@@ -89,13 +89,13 @@ npm install --save-dev jest @testing-library/react @testing-library/jest-dom
 
 ### Current Implementation Snapshot (Aug 2025)
 
-- App is implemented as a React + TypeScript SPA under `web/` using Vite.
-- Navigation: left collapsible sidebar (`web/src/components/NavBar.tsx`).
-- Routes declared in `web/src/App.tsx`:
-  - `/snippets`, `/expression`, `/delegation`, `/formatter`, `/resources`, `/icons`, `/diagnostics`, `/roadmap`, `/packs`, `/dataverse`, `/licensing`, `/settings`, `/about`.
-- Data sources (MVP): static JSON in `web/public/*.example.json` (resources, roadmap, snippets), with graceful fallbacks.
-- Persistence: `localStorage` keys `mm.notifyWindowMonths`, `mm.icons.size`, `mm.icons.stroke`, `mm.icons.strokeColor`, `mm.icons.fillColor`, `mm.icons.rounded`.
-- Styling: global in `web/src/index.css`; sidebar styles in `web/src/components/NavBar.css`.
+* App is implemented as a React + TypeScript SPA under `web/` using Vite.
+* Navigation: left collapsible sidebar (`web/src/components/NavBar.tsx`).
+* Routes declared in `web/src/App.tsx`:
+  * `/snippets`, `/expression`, `/delegation`, `/formatter`, `/resources`, `/icons`, `/diagnostics`, `/roadmap`, `/packs`, `/dataverse`, `/licensing`, `/settings`, `/about`.
+* Data sources (MVP): static JSON in `web/public/*.example.json` (resources, roadmap, snippets), with graceful fallbacks.
+* Persistence: `localStorage` keys `mm.notifyWindowMonths`, `mm.icons.size`, `mm.icons.stroke`, `mm.icons.strokeColor`, `mm.icons.fillColor`, `mm.icons.rounded`.
+* Styling: global in `web/src/index.css`; sidebar styles in `web/src/components/NavBar.css`.
 
 Run locally for this repo:
 

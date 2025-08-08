@@ -1,7 +1,9 @@
 # PowerPlatformCompanion
+
 A MacOS companion to help with all things Power Platform
 
 ## Documentation
+
 - **Vision**: see `docs/vision.md` for the product concept and MVP goals.
 - **Background**: see `docs/background.md` for history, prior exploration, and decisions.
 - **Architecture**: see `docs/architecture.md` for app layout, state, and extensibility.
@@ -11,6 +13,7 @@ A MacOS companion to help with all things Power Platform
 - **Schemas**: see `docs/schemas.md` for JSON shapes and localStorage keys.
 
 ## Repo Structure (high‑level)
+
 - **`context/`**: Runtime prompt surface for the assistant.
   - `system.md`, `persona.md`, `style.md`, `safety.md`, `glossary.md`, `tools.json`
   - Keep this minimal and focused on rules the model should follow at run time.
