@@ -12,6 +12,34 @@ This project ships a React + TypeScript single‑page app (SPA) built with Vite.
 - `NavBar` provides a left collapsible sidebar. It toggles `body.sidebar-collapsed` and shifts `#root` via CSS padding.
 - Main pages render into `<Routes>` inside `App.tsx`.
 
+### Responsive layout & overflow guards
+
+The app uses a fixed left sidebar and offsets the main app container using CSS variables defined in `web/src/index.css`:
+
+```css
+:root {
+  --sidebar-w: 248px;
+  --sidebar-w-collapsed: 64px;
+}
+
+#root { padding-left: var(--sidebar-w); }
+body.sidebar-collapsed #root { padding-left: var(--sidebar-w-collapsed); }
+
+@media (max-width: 768px) {
+  #root { padding-left: var(--sidebar-w-collapsed); }
+}
+```
+
+The sidebar itself uses `box-sizing: border-box` to ensure its declared width includes padding/border exactly and prevent content from bleeding underneath.
+
+Global overflow protections are applied in `web/src/index.css`:
+
+- `body { overflow-x: hidden }` to suppress accidental horizontal scrolling.
+- `*, *::before, *::after { box-sizing: border-box }` to keep layout widths predictable.
+- Long-content guards for code and text: `pre, code { white-space: pre-wrap; overflow-wrap: anywhere; }` and media `max-width: 100%`.
+
+Snippets page cards (`web/src/pages/SnippetsPage.tsx`) are constrained with `maxWidth: '100%'`, allow header wrapping, and set `minWidth: 0` on content columns so that long titles or buttons do not force horizontal overflow.
+
 ## State & persistence
 
 - UI preferences (e.g., roadmap notification window, icon defaults) are persisted in `localStorage` under the `mm.*` namespace.

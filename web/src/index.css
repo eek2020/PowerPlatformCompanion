@@ -11,7 +11,13 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Layout variables */
+  --sidebar-w: 248px;
+  --sidebar-w-collapsed: 64px;
 }
+
+/* Global box-sizing to keep widths inside viewport */
+*, *::before, *::after { box-sizing: border-box; }
 
 a {
   font-weight: 500;
@@ -24,10 +30,9 @@ a:hover {
 
 body {
   margin: 0;
-  display: grid;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 h1 {
@@ -70,9 +75,29 @@ button:focus-visible {
 /* Utilities */
 .container {
   max-width: 1080px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 1rem;
 }
+
+/* Ensure main content never overflows horizontally */
+main.container { max-width: 100%; overflow-x: hidden; }
+
+/* Long content guards */
+pre, code, kbd, samp {
+  max-width: 100%;
+  white-space: pre-wrap;           /* wrap long lines */
+  word-break: break-word;          /* legacy break */
+  overflow-wrap: anywhere;         /* modern break */
+}
+pre { overflow-x: auto; }
+
+article, section, header, footer, nav {
+  max-width: 100%;
+}
+
+img, svg, table { max-width: 100%; height: auto; }
 
 /* Forms */
 textarea, input[type="text"], input[type="search"], select {
@@ -93,10 +118,15 @@ small.help { opacity: 0.7; }
 
 /* Layout offset for sidebar */
 #root {
-  padding-left: 248px;
+  padding-left: var(--sidebar-w);
   transition: padding-left 200ms ease;
 }
-body.sidebar-collapsed #root { padding-left: 64px; }
+body.sidebar-collapsed #root { padding-left: var(--sidebar-w-collapsed); }
+
+/* Responsive: shrink sidebar offset on small screens */
+@media (max-width: 768px) {
+  #root { padding-left: var(--sidebar-w-collapsed); }
+}
 
 /* Buttons - modern hover/focus effects */
 button {

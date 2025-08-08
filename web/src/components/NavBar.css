@@ -3,6 +3,7 @@
   position: fixed;
   inset: 0 auto 0 0;
   width: 248px;
+  box-sizing: border-box;
   background: linear-gradient(180deg, #0b132b 0%, #0e1a3a 100%);
   color: #fff;
   border-right: 1px solid #1c2541;
@@ -14,7 +15,7 @@
   z-index: 10;
 }
 
-.sidebar.collapsed { width: 64px; }
+.sidebar.collapsed { width: 64px; box-sizing: border-box; }
 
 .sidebar__top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
 .brand { display: flex; align-items: center; gap: 0.6rem; color: #fff; text-decoration: none; font-weight: 700; letter-spacing: 0.3px; }
@@ -34,3 +35,10 @@
 .sidebar.collapsed .nav__label { opacity: 0; width: 0; overflow: hidden; }
 
 .sidebar__footer { margin-top: auto; opacity: 0.7; font-size: 0.8rem; text-align: center; }
+
+/* Responsive: auto-collapse sidebar on small screens */
+@media (max-width: 768px) {
+  .sidebar { width: 64px; }
+  .sidebar .brand__name { opacity: 0; width: 0; overflow: hidden; }
+  .sidebar .nav__label { opacity: 0; width: 0; overflow: hidden; }
+}
