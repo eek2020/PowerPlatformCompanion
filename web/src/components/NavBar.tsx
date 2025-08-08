@@ -12,73 +12,109 @@ export default function NavBar() {
   }, [collapsed])
 
   return (
-    <aside className={collapsed ? 'sidebar collapsed' : 'sidebar'}>
+    <aside className={collapsed ? 'sidebar collapsed' : 'sidebar'} aria-label="Sidebar">
       <div className="sidebar__top">
         <Link to="/" className="brand" aria-label="MakerMate Home">
           <span className="brand__logo">⚡️</span>
           <span className="brand__name">MakerMate</span>
         </Link>
-        <button className="sidebar__toggle" onClick={() => setCollapsed(v => !v)} aria-label="Toggle sidebar">
+        <button
+          className="sidebar__toggle"
+          onClick={() => setCollapsed(v => !v)}
+          aria-label="Toggle sidebar"
+          aria-expanded={!collapsed}
+          aria-controls="primary-navigation"
+        >
           {collapsed ? '›' : '‹'}
         </button>
       </div>
-      <nav className="sidebar__nav">
-        <NavLink to="/snippets" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">📄</span>
-          <span className="nav__label">Snippets</span>
-        </NavLink>
-        <NavLink to="/expression" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">🧪</span>
-          <span className="nav__label">Expression Tester</span>
-        </NavLink>
-        <NavLink to="/delegation" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">🔍</span>
-          <span className="nav__label">Delegation Check</span>
-        </NavLink>
-        <NavLink to="/formatter" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">🧰</span>
-          <span className="nav__label">Flow Formatter</span>
-        </NavLink>
-        <NavLink to="/resources" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">🌐</span>
-          <span className="nav__label">Resources</span>
-        </NavLink>
-        <NavLink to="/planning" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">🗓️</span>
-          <span className="nav__label">Planning</span>
-        </NavLink>
-        <NavLink to="/icons" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">🎨</span>
-          <span className="nav__label">Icons</span>
-        </NavLink>
-        <NavLink to="/diagnostics" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">🩺</span>
-          <span className="nav__label">Diagnostics</span>
-        </NavLink>
-        <NavLink to="/roadmap" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">🗺️</span>
-          <span className="nav__label">Roadmap</span>
-        </NavLink>
-        <NavLink to="/packs" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">📦</span>
-          <span className="nav__label">Packs</span>
-        </NavLink>
-        <NavLink to="/dataverse" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">🗂️</span>
-          <span className="nav__label">Dataverse Lookup</span>
-        </NavLink>
-        <NavLink to="/licensing" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">🧾</span>
-          <span className="nav__label">Licensing</span>
-        </NavLink>
-        <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">⚙️</span>
-          <span className="nav__label">Settings</span>
-        </NavLink>
-        <NavLink to="/about" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-          <span className="nav__icon">ℹ️</span>
-          <span className="nav__label">About</span>
-        </NavLink>
+      <nav className="sidebar__nav" role="navigation" aria-label="Primary" id="primary-navigation">
+        <ul className="nav__list">
+          <li>
+            <NavLink to="/snippets" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">📄</span>
+              <span className="nav__label">Snippets</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/expression" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">🧪</span>
+              <span className="nav__label">Expression Tester</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/delegation" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">🔍</span>
+              <span className="nav__label">Delegation Check</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/formatter" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">🧰</span>
+              <span className="nav__label">Flow Formatter</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/resources" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">🌐</span>
+              <span className="nav__label">Resources</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/planning" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">🗓️</span>
+              <span className="nav__label">Planning</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/icons" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">🎨</span>
+              <span className="nav__label">Icons</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/diagnostics" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">🩺</span>
+              <span className="nav__label">Diagnostics</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/roadmap" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">🗺️</span>
+              <span className="nav__label">Roadmap</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/packs" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">📦</span>
+              <span className="nav__label">Packs</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/dataverse" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">🗂️</span>
+              <span className="nav__label">Dataverse Lookup</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/licensing" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">🧾</span>
+              <span className="nav__label">Licensing</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">⚙️</span>
+              <span className="nav__label">Settings</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/about" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">ℹ️</span>
+              <span className="nav__label">About</span>
+            </NavLink>
+          </li>
+        </ul>
       </nav>
       <div className="sidebar__footer">
         <small>v0.1</small>

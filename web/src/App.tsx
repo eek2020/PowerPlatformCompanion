@@ -19,7 +19,9 @@ import PlanningPage from './pages/PlanningPage'
 function App() {
   return (
     <>
+      <a href="#main" className="skip-link">Skip to main content</a>
       <NavBar />
+      <div id="main" role="main" tabIndex={-1}>
       <Routes>
         <Route path="/" element={<Navigate to="/snippets" replace />} />
         <Route path="/snippets" element={<SnippetsPage />} />
@@ -36,8 +38,9 @@ function App() {
         <Route path="/icons" element={<IconsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="*" element={<main className="container"><h1>Not Found</h1></main>} />
+        <Route path="*" element={<div className="container"><h1>Not Found</h1></div>} />
       </Routes>
+      </div>
     </>
   )
 }

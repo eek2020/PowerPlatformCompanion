@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 export type TShirt = 'XS' | 'S' | 'M' | 'L' | 'XL'
 export type Complexity = 'Simple' | 'Moderate' | 'Complex'
@@ -50,6 +50,45 @@ export default function PlanningPage() {
           // drop qty/notes from older data
         }))
       }
+
+  // Focus management and keyboard controls for dialog
+  useEffect(() => {
+    if (guideId) {
+      lastFocused.current = (document.activeElement as HTMLElement) || null
+      // Defer focus to next frame so the element exists
+      requestAnimationFrame(() => {
+        dialogRef.current?.focus()
+      })
+
+      const onKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          e.preventDefault()
+          handleCloseGuide()
+        } else if (e.key === 'Tab' && dialogRef.current) {
+          // Simple focus trap within dialog
+          const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          )
+          const list = Array.from(focusables).filter(el => !el.hasAttribute('disabled'))
+          if (list.length === 0) return
+          const currentIndex = list.indexOf(document.activeElement as HTMLElement)
+          if (e.shiftKey) {
+            if (currentIndex <= 0) {
+              e.preventDefault()
+              list[list.length - 1].focus()
+            }
+          } else {
+            if (currentIndex === -1 || currentIndex >= list.length - 1) {
+              e.preventDefault()
+              list[0].focus()
+            }
+          }
+        }
+      }
+      window.addEventListener('keydown', onKeyDown)
+      return () => window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [guideId])
     } catch {}
     return DEFAULTS
   })
@@ -123,6 +162,15 @@ export default function PlanningPage() {
 
   // Guidance modal
   const [guideId, setGuideId] = useState<string | null>(null)
+  const dialogRef = useRef<HTMLDivElement | null>(null)
+  const lastFocused = useRef<HTMLElement | null>(null)
+  const handleCloseGuide = () => {
+    setGuideId(null)
+    // restore focus
+    if (lastFocused.current) {
+      lastFocused.current.focus()
+    }
+  }
   const guideText = (i: PlanItem) => {
     if (i.category === 'Power Platform' && i.component === 'Power Apps') return 'Power Apps: ~3 basic screens = Simple; 4–8 screens with forms = Moderate; >8 screens with complex logic = Complex.'
     if (i.category === 'Power Platform' && i.component === 'Power Automate') return 'Power Automate: 1–3 actions = Simple; 4–10 actions with conditions = Moderate; >10 actions/connectors/orchestration = Complex.'
@@ -146,12 +194,12 @@ export default function PlanningPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #2f2f2f' }}>Category</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #2f2f2f', minWidth: 260 }}>Component</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #2f2f2f' }}>Complexity</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #2f2f2f' }}>T-Shirt</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #2f2f2f' }}>Est. time</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #2f2f2f' }}></th>
+              <th scope="col" style={{ textAlign: 'left', borderBottom: '1px solid #2f2f2f' }}>Category</th>
+              <th scope="col" style={{ textAlign: 'left', borderBottom: '1px solid #2f2f2f', minWidth: 260 }}>Component</th>
+              <th scope="col" style={{ textAlign: 'left', borderBottom: '1px solid #2f2f2f' }}>Complexity</th>
+              <th scope="col" style={{ textAlign: 'left', borderBottom: '1px solid #2f2f2f' }}>T-Shirt</th>
+              <th scope="col" style={{ textAlign: 'center', borderBottom: '1px solid #2f2f2f' }}>Est. time</th>
+              <th scope="col" style={{ textAlign: 'left', borderBottom: '1px solid #2f2f2f' }}></th>
             </tr>
           </thead>
           <tbody>
@@ -235,12 +283,34 @@ export default function PlanningPage() {
         const item = items.find(x => x.id === guideId)
         if (!item) return null
         return (
-          <div role="dialog" aria-modal="true" onClick={() => setGuideId(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'grid', placeItems: 'center' }}>
-            <div onClick={e => e.stopPropagation()} style={{ background: 'var(--color-bg, #111)', color: 'inherit', padding: '1rem', borderRadius: 8, maxWidth: 520 }}>
-              <h3 style={{ marginTop: 0 }}>Guidance</h3>
-              <p style={{ lineHeight: 1.5 }}>{guideText(item)}</p>
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="planning-guide-title"
+            aria-describedby="planning-guide-desc"
+            onClick={handleCloseGuide}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'grid', placeItems: 'center', padding: 16 }}
+          >
+            <div
+              ref={dialogRef}
+              tabIndex={-1}
+              onClick={e => e.stopPropagation()}
+              style={{
+                background: 'var(--modal-bg, #fff)',
+                color: 'var(--modal-fg, #111)',
+                padding: '1rem 1.25rem',
+                borderRadius: 10,
+                maxWidth: 600,
+                width: 'min(90vw, 600px)',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.35)',
+                fontSize: '0.95rem',
+                lineHeight: 1.6,
+              }}
+            >
+              <h3 id="planning-guide-title" style={{ marginTop: 0, marginBottom: 8 }}>Guidance</h3>
+              <p id="planning-guide-desc" style={{ marginTop: 0, marginBottom: 16 }}>{guideText(item)}</p>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                <button onClick={() => setGuideId(null)}>Close</button>
+                <button onClick={handleCloseGuide}>Close</button>
               </div>
             </div>
           </div>
