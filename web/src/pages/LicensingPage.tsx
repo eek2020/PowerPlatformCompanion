@@ -63,11 +63,19 @@ export default function LicensingPage() {
     }
     try {
       setStatus('Fetching PDF…')
-      const resp = await fetch('/api/licensing/fetch', {
+      // Try redirect path first (works in production and Netlify Dev). If 404 (e.g., plain Vite), retry direct functions path.
+      let resp = await fetch('/api/licensing/fetch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: pdfUrl })
       })
+      if (resp.status === 404) {
+        resp = await fetch('/.netlify/functions/licensing-fetch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: pdfUrl })
+        })
+      }
       if (!resp.ok) {
         const t = await resp.text()
         setStatus(`Fetch failed (${resp.status}). ${t}`)
