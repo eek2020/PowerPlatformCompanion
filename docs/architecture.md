@@ -49,6 +49,15 @@ Snippets page cards (`web/src/pages/SnippetsPage.tsx`) are constrained with `max
 
 - Client pages rely on try/catch with user‑friendly fallbacks (embedded examples) and small warnings in the UI.
 
+## Roadmap data model & refresh
+
+- The Roadmap page (`web/src/pages/RoadmapPage.tsx`) loads from `/roadmap.example.json`.
+- Responses are cached in `localStorage` under `mm.roadmap.cache.v1` with a timestamp `mm.roadmap.cacheAt`.
+- The UI serves cached data immediately if present and less than 6 hours old, then refreshes in the background.
+- Auto-refresh runs every 30 minutes and also on tab focus.
+- Items are mapped to a view-model adding flags (`dueSoon`, `dueThisOrPrev`) and converting `due` to `Date` for display.
+- Users can select an item to open an inline details panel with quick actions and link out to the official source when available.
+
 ## Extensibility
 
 - Each feature lives in its own page component under `web/src/pages/` with small utilities colocated or in `web/src/utils/`.
