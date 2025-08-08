@@ -3,6 +3,7 @@ import { useState } from 'react'
 export default function DelegationPage() {
   const [formula, setFormula] = useState('')
   const [findings, setFindings] = useState<{ level: 'warn' | 'info'; message: string }[]>([])
+  const [source, setSource] = useState<'Dataverse' | 'SharePoint' | 'SQL' | 'Other'>('Dataverse')
 
   const analyse = () => {
     const f = formula.trim()
@@ -12,7 +13,7 @@ export default function DelegationPage() {
 
     // Heuristic checks (non-exhaustive)
     if (/\bSearch\s*\(/i.test(f)) {
-      add('warn', 'Search(...) is often non-delegable depending on the data source. Consider StartsWith/Filter patterns.')
+      add('warn', `Search(...) is often non-delegable on ${source}. Consider StartsWith/Filter patterns.`)
     }
     if (/\bForAll\s*\(/i.test(f)) {
       add('warn', 'ForAll(...) forces client-side iteration and can break delegation. Ensure the inner operations are delegable or reconsider the approach.')
@@ -21,16 +22,25 @@ export default function DelegationPage() {
       add('warn', 'AddColumns(...) is frequently non-delegable. Check if the computed column can be pushed to the source or refactored.')
     }
     if (/\bLookUp\s*\(/i.test(f)) {
-      add('info', 'LookUp(...) may be non-delegable if the predicate isn’t delegable. Verify your condition and source capabilities.')
+      add('info', `LookUp(...) may be non-delegable on ${source} if the predicate isn’t delegable. Verify your condition and source capabilities.`)
     }
     if (/\bSortByColumns\s*\(/i.test(f)) {
-      add('info', 'SortByColumns(...) delegation depends on the source and the column type. Confirm source delegation support.')
+      add('info', `SortByColumns(...) delegation depends on ${source} and the column type. Confirm source delegation support.`)
     }
     if (/[^A-Za-z]in[^A-Za-z]/i.test(f)) {
-      add('warn', "The 'in' operator is often non-delegable on several sources. Prefer StartsWith or exact filters where possible.")
+      add('warn', `The 'in' operator is often non-delegable on ${source}. Prefer StartsWith or exact filters where possible.`)
     }
     if (/\bStartsWith\s*\(/i.test(f)) {
-      add('info', 'StartsWith(...) is delegable on some sources (e.g., Dataverse, SharePoint) for indexed text columns. Validate for your source.')
+      add('info', `StartsWith(...) can be delegable on ${source} for indexed text columns. Validate for your source.`)
+    }
+    if (/\bGroupBy\s*\(/i.test(f)) {
+      add('warn', `GroupBy(...) is commonly non-delegable on ${source}. Consider pre-aggregating or using views.`)
+    }
+    if (/\bDistinct\s*\(/i.test(f)) {
+      add('info', `Distinct(...) may have delegation limits on ${source}. Test with large datasets.`)
+    }
+    if (/\bFilter\s*\(.+\bIsBlank\s*\(/is.test(f)) {
+      add('info', `Filter(... IsBlank(...)) can be tricky for delegation on ${source}. Consider explicit comparisons where possible.`)
     }
 
     setFindings(results)
@@ -39,6 +49,13 @@ export default function DelegationPage() {
   return (
     <main className="container">
       <h1>Delegation Checker</h1>
+      <label htmlFor="source">Data Source</label>
+      <select id="source" value={source} onChange={e => setSource(e.target.value as any)}>
+        <option>Dataverse</option>
+        <option>SharePoint</option>
+        <option>SQL</option>
+        <option>Other</option>
+      </select>
       <label htmlFor="fx">Power Fx Formula</label>
       <textarea id="fx" rows={8} placeholder="Paste your formula here…" value={formula} onChange={e => setFormula(e.target.value)} />
       <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>

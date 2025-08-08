@@ -65,6 +65,15 @@ export default function SnippetsPage() {
               <div>
                 <h3 style={{ margin: 0 }}>{sn.title}</h3>
                 <small className="help">{sn.tags.join(' • ')}</small>
+                {(sn.source || sn.tested !== undefined) && (
+                  <div>
+                    <small className="help">
+                      {sn.source ? `Source: ${sn.source}` : ''}
+                      {sn.source && sn.tested !== undefined ? ' • ' : ''}
+                      {sn.tested !== undefined ? `Tested: ${sn.tested ? 'Yes' : 'No'}` : ''}
+                    </small>
+                  </div>
+                )}
               </div>
               <button onClick={() => copy(sn.code)}>Copy</button>
             </header>

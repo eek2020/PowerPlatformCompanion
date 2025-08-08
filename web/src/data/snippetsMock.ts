@@ -4,6 +4,8 @@ export type Snippet = {
   tags: string[]
   code: string
   explanation?: string
+  source?: string
+  tested?: boolean
 }
 
 export const snippetsMock: Snippet[] = [

@@ -8,6 +8,10 @@ export function isStringArray(x: unknown): x is string[] {
   return Array.isArray(x) && x.every(isString)
 }
 
+export function isBoolean(x: unknown): x is boolean {
+  return typeof x === 'boolean'
+}
+
 export function isSnippet(x: unknown): x is Snippet {
   if (!x || typeof x !== 'object') return false
   const o = x as Record<string, unknown>
@@ -16,7 +20,9 @@ export function isSnippet(x: unknown): x is Snippet {
     isString(o.title) &&
     isStringArray(o.tags) &&
     isString(o.code) &&
-    (o.explanation === undefined || isString(o.explanation))
+    (o.explanation === undefined || isString(o.explanation)) &&
+    (o.source === undefined || isString(o.source)) &&
+    (o.tested === undefined || isBoolean(o.tested))
   )
 }
 
