@@ -50,45 +50,6 @@ export default function PlanningPage() {
           // drop qty/notes from older data
         }))
       }
-
-  // Focus management and keyboard controls for dialog
-  useEffect(() => {
-    if (guideId) {
-      lastFocused.current = (document.activeElement as HTMLElement) || null
-      // Defer focus to next frame so the element exists
-      requestAnimationFrame(() => {
-        dialogRef.current?.focus()
-      })
-
-      const onKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          e.preventDefault()
-          handleCloseGuide()
-        } else if (e.key === 'Tab' && dialogRef.current) {
-          // Simple focus trap within dialog
-          const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          )
-          const list = Array.from(focusables).filter(el => !el.hasAttribute('disabled'))
-          if (list.length === 0) return
-          const currentIndex = list.indexOf(document.activeElement as HTMLElement)
-          if (e.shiftKey) {
-            if (currentIndex <= 0) {
-              e.preventDefault()
-              list[list.length - 1].focus()
-            }
-          } else {
-            if (currentIndex === -1 || currentIndex >= list.length - 1) {
-              e.preventDefault()
-              list[0].focus()
-            }
-          }
-        }
-      }
-      window.addEventListener('keydown', onKeyDown)
-      return () => window.removeEventListener('keydown', onKeyDown)
-    }
-  }, [guideId])
     } catch {}
     return DEFAULTS
   })
@@ -147,18 +108,51 @@ export default function PlanningPage() {
     return [header, ...rows].map(r => r.map(escape).join(',')).join('\n')
   }, [items, sizeHours])
 
-  const downloadCSV = () => {
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'planning.csv'
-    a.click()
-    URL.revokeObjectURL(url)
+  const [saveMessage, setSaveMessage] = useState<string>('')
+  const saveAsCSV = async () => {
+    setSaveMessage('')
+    try {
+      const ts = new Date().toISOString().slice(0, 10)
+      const suggestedName = `planning-${ts}.csv`
+      const bom = '\uFEFF'
+      const blob = new Blob([bom, csv], { type: 'text/csv;charset=utf-8;' })
+      const supportsPicker = typeof (window as any).showSaveFilePicker === 'function'
+      if (supportsPicker) {
+        const handle = await (window as any).showSaveFilePicker({
+          suggestedName,
+          types: [{
+            description: 'CSV file',
+            accept: { 'text/csv': ['.csv'] },
+          }],
+        })
+        const writable = await handle.createWritable()
+        await writable.write(blob)
+        await writable.close()
+        setSaveMessage(`Saved to ${handle.name}`)
+      } else {
+        // Fallback to traditional download
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = suggestedName
+        a.style.display = 'none'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        setTimeout(() => URL.revokeObjectURL(url), 1000)
+        setSaveMessage('Downloaded CSV (check your browser downloads).')
+      }
+    } catch (err: any) {
+      if (err && err.name === 'AbortError') {
+        setSaveMessage('Save cancelled.')
+      } else {
+        setSaveMessage('Failed to save CSV.')
+        // console.error(err)
+      }
+    }
   }
 
   const totalHours = useMemo(() => items.reduce((sum, i) => sum + (sizeHours[i.size] ?? 0), 0), [items, sizeHours])
-
 
   // Guidance modal
   const [guideId, setGuideId] = useState<string | null>(null)
@@ -186,9 +180,10 @@ export default function PlanningPage() {
 
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <button onClick={addCustom}>Add custom item</button>
-        <button onClick={downloadCSV}>Export CSV</button>
+        <button onClick={saveAsCSV}>Save As…</button>
         <small className="help">Data is saved locally to your browser.</small>
       </div>
+      <div aria-live="polite" style={{ minHeight: 20, marginTop: 4, color: '#475569' }}>{saveMessage}</div>
 
       <section style={{ marginTop: '1rem', overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>

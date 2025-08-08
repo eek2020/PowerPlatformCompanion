@@ -4,7 +4,7 @@ The SPA uses `react-router-dom` with a left sidebar for primary navigation. Rout
 
 ## Current routes
 
-- `/` → redirects to `/snippets`
+- `/` → Landing page (`LandingPage`)
 - `/snippets` → `SnippetsPage`
 - `/expression` → `ExpressionPage`
 - `/delegation` → `DelegationPage`
@@ -24,6 +24,7 @@ Missing pages fall through to a simple 404 element.
 ## Navigation UI
 
 The sidebar component `web/src/components/NavBar.tsx`:
+
 - Collapsible (`body.sidebar-collapsed` toggled via state).
 - Icons + labels (labels hidden when collapsed).
 - Layout offset handled by `#root { padding-left: … }` in `web/src/index.css`.

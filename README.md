@@ -38,6 +38,7 @@ These are available in the React app under `web/` and surfaced via the left side
 - **Roadmap (enhanced)**: Search/filter with icon quick filters, due‑soon notifications, and a modal details view. Uses caching and periodic refresh. Loads from `web/public/roadmap.example.json` by default; optionally uses the M365 Public Roadmap API via `/api/m365`.
 - **Settings (enhanced)**: Controls the roadmap notification window in months, persisted in `localStorage` key `mm.notifyWindowMonths`.
 - **Icons (new)**: Browse a small built‑in set, customise (size/stroke/colour), import your SVG, and copy as SVG/Data URI/Power Apps Image formula. Route: `/icons`.
+- **Planning (new)**: Quick effort planning with category/component/complexity and T‑shirt sizing. Estimates are derived from configurable size→hours mapping stored in localStorage. CSV export is via a single “Save As…” action which uses the File System Access API when available (native Save dialog) and falls back to a standard download otherwise. Route: `/planning`.
 
 ### Data files
 

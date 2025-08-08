@@ -1,6 +1,6 @@
 import './App.css'
 import NavBar from './components/NavBar'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import SnippetsPage from './pages/SnippetsPage'
 import DelegationPage from './pages/DelegationPage'
 import FormatterPage from './pages/FormatterPage'
@@ -15,6 +15,7 @@ import DiagnosticsPage from './pages/DiagnosticsPage'
 import RoadmapPage from './pages/RoadmapPage'
 import IconsPage from './pages/IconsPage'
 import PlanningPage from './pages/PlanningPage'
+import LandingPage from './pages/LandingPage'
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
       <NavBar />
       <div id="main" role="main" tabIndex={-1}>
       <Routes>
-        <Route path="/" element={<Navigate to="/snippets" replace />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/snippets" element={<SnippetsPage />} />
         <Route path="/delegation" element={<DelegationPage />} />
         <Route path="/formatter" element={<FormatterPage />} />
