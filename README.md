@@ -35,7 +35,7 @@ These are available in the React app under `web/` and surfaced via the left side
 - **Expression Tester (new)**: Basic heuristics to correct common non‑Power Fx syntax (e.g. `&&` → `And`, `||` → `Or`, `!` → `Not`, `==` → `=`). Provides a before/after preview and Apply.
 - **Resources (new)**: Curated YouTube channels and blogs. Loads from `web/public/resources.example.json` with a search box. Planned: live discovery and recommendations.
 - **Diagnostics (new)**: Error message helper with seed heuristics for context and next steps. Planned: inline fixes and diffs.
-- **Roadmap (new)**: Reformatted view with search/filter and due‑soon notifications. Loads from `web/public/roadmap.example.json` (placeholder until wired to official source).
+- **Roadmap (enhanced)**: Search/filter with icon quick filters, due‑soon notifications, and a modal details view. Uses caching and periodic refresh. Loads from `web/public/roadmap.example.json` by default; optionally uses the M365 Public Roadmap API via `/api/m365`.
 - **Settings (enhanced)**: Controls the roadmap notification window in months, persisted in `localStorage` key `mm.notifyWindowMonths`.
 - **Icons (new)**: Browse a small built‑in set, customise (size/stroke/colour), import your SVG, and copy as SVG/Data URI/Power Apps Image formula. Route: `/icons`.
 
