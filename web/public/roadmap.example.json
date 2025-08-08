@@ -1,0 +1,24 @@
+[
+  {
+    "id": "rm-001",
+    "title": "Power Fx: Performance and Intellisense improvements",
+    "area": "Power Apps",
+    "status": "In development",
+    "due": "2025-08-01",
+    "link": "https://www.microsoft.com/en-us/microsoft-365/roadmap"
+  },
+  {
+    "id": "rm-002",
+    "title": "Dataverse: Query plan insights",
+    "area": "Dataverse",
+    "status": "Planned",
+    "due": "2025-09-15"
+  },
+  {
+    "id": "rm-003",
+    "title": "Power Automate: Flow debugging improvements",
+    "area": "Power Automate",
+    "status": "Rolling out",
+    "due": "2025-07-20"
+  }
+]

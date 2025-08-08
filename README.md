@@ -16,3 +16,27 @@ A MacOS companion to help with all things Power Platform
 - **`memory/`**: Templates for user/session state.
 - **`packs/`**: Content pack schemas (snippets, issues, MVPs, licensing).
 - **`eval/`**: Guardrail rubrics, red‑team cases, and golden testcases.
+
+## Features (MVP, in progress)
+
+These are available in the React app under `web/` and surfaced via the left sidebar:
+
+- **Snippets**: Searchable snippet bank loaded from `web/public/snippets.example.json` with runtime validation.
+- **Delegation Check**: Heuristic analysis of expressions by data source (Dataverse/SharePoint/SQL/Other).
+- **Flow Formatter**: JSON pretty‑printer with large payload warnings and copy support.
+- **Expression Tester (new)**: Basic heuristics to correct common non‑Power Fx syntax (e.g. `&&` → `And`, `||` → `Or`, `!` → `Not`, `==` → `=`). Provides a before/after preview and Apply.
+- **Resources (new)**: Curated YouTube channels and blogs. Loads from `web/public/resources.example.json` with a search box. Planned: live discovery and recommendations.
+- **Diagnostics (new)**: Error message helper with seed heuristics for context and next steps. Planned: inline fixes and diffs.
+- **Roadmap (new)**: Reformatted view with search/filter and due‑soon notifications. Loads from `web/public/roadmap.example.json` (placeholder until wired to official source).
+- **Settings (enhanced)**: Controls the roadmap notification window in months, persisted in `localStorage` key `mm.notifyWindowMonths`.
+
+### Data files
+
+- `web/public/snippets.example.json` – sample snippets catalog.
+- `web/public/resources.example.json` – sample YouTube/blog resources.
+- `web/public/roadmap.example.json` – sample roadmap items for UI development.
+
+### Notes
+
+- Discovery/recommendation for Resources and official Roadmap ingestion are planned next steps.
+- All features are designed to be testable and progressively enhanced.

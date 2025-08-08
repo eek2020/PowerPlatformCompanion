@@ -1,0 +1,6 @@
+[
+  { "id": "yt-mspp", "title": "Microsoft Power Platform", "url": "https://www.youtube.com/@MicrosoftPowerPlatform", "type": "youtube", "channel": "Official" },
+  { "id": "yt-reza", "title": "Reza Dorrani", "url": "https://www.youtube.com/@rezadorrani", "type": "youtube" },
+  { "id": "yt-lowcodelewis", "title": "Low Code Lewis", "url": "https://www.youtube.com/@LowCodeLewis", "type": "youtube" },
+  { "id": "blog-luise", "title": "Luise Freese (I Am Architect)", "url": "https://www.missfision.com/", "type": "blog" }
+]
