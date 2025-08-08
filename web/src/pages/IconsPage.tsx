@@ -35,6 +35,22 @@ const BUILT_IN_ICONS: { name: string; tags: string[]; inner: string }[] = [
   }
 ]
 
+// Note: Icons page is Power Apps–centric only; no platform filters here.
+
+// Common Power Automate vs Power Apps expression/operator differences
+const EXPRESSION_DIFFS: { name: string; automate: string; apps: string; note?: string }[] = [
+  { name: 'logical-and', automate: '&&', apps: 'And', note: 'Logical AND' },
+  { name: 'logical-or', automate: '||', apps: 'Or', note: 'Logical OR' },
+  { name: 'logical-not', automate: '!', apps: 'Not', note: 'Logical NOT' },
+  { name: 'equal', automate: '==', apps: '=', note: 'Equality' },
+  { name: 'not-equal', automate: '!=', apps: '<>', note: 'Inequality' },
+  { name: 'strict-equal', automate: '===', apps: '=', note: 'No strict vs loose in Power Fx' },
+  { name: 'strict-not-equal', automate: '!==', apps: '<>', note: 'No strict vs loose in Power Fx' },
+  { name: 'null-vs-blank', automate: 'null', apps: 'Blank()', note: 'Null vs Blank value' },
+  { name: 'ternary', automate: 'cond ? a : b', apps: 'If(cond, a, b)', note: 'Conditional' },
+  { name: 'concat', automate: 'a + b', apps: 'Concatenate(a, b)', note: 'String concatenation' }
+]
+
 function buildSvg(inner: string, size: number, strokeWidth: number, stroke: string, fill: string, rounded: boolean) {
   const common = `width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="${rounded ? 'round' : 'square'}" stroke-linejoin="${rounded ? 'round' : 'miter'}" xmlns="http://www.w3.org/2000/svg"`;
   return `<svg ${common}>${inner}</svg>`
@@ -100,6 +116,35 @@ export default function IconsPage() {
     )
   }
 
+  // Render small badge-like icons for expression differences
+  const expressionIconInner = (text: string) => {
+    const safe = text.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    return `<rect x="2" y="4" width="20" height="16" rx="4" ry="4" fill="none" />
+            <text x="12" y="16" text-anchor="middle" font-size="10" font-family="monospace" fill="${stroke}">${safe}</text>`
+  }
+
+  const renderExpressionCard = (item: { name: string; automate: string; apps: string; note?: string }) => {
+    const svgAutomate = buildSvg(expressionIconInner(item.automate), size, strokeWidth, stroke, fill, rounded)
+    const svgApps = buildSvg(expressionIconInner(item.apps), size, strokeWidth, stroke, fill, rounded)
+    return (
+      <article key={item.name} style={{ border: '1px solid #2b3a66', borderRadius: 10, padding: '0.6rem' }}>
+        <header style={{ marginBottom: 6 }}>
+          <strong>{item.note ?? item.name}</strong>
+        </header>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', alignItems: 'center' }}>
+          <div style={{ display: 'grid', placeItems: 'center', height: 96 }} dangerouslySetInnerHTML={{ __html: svgAutomate }} />
+          <div style={{ display: 'grid', placeItems: 'center', height: 96 }} dangerouslySetInnerHTML={{ __html: svgApps }} />
+        </div>
+        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: 6 }}>
+          <button title="Copy Automate form" onClick={() => copy(item.automate)}>Copy Automate</button>
+          <button title="Copy Power Apps form" onClick={() => copy(item.apps)}>Copy Power Apps</button>
+          <button title="Copy Automate SVG" onClick={() => copy(svgAutomate)}>Copy Automate SVG</button>
+          <button title="Copy Power Apps SVG" onClick={() => copy(svgApps)}>Copy Power Apps SVG</button>
+        </div>
+      </article>
+    )
+  }
+
   const handleFile = (f: File) => {
     const reader = new FileReader()
     reader.onload = () => {
@@ -149,6 +194,14 @@ export default function IconsPage() {
         <h2 style={{ fontSize: '1.1rem' }}>Built‑in Icons</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.75rem' }}>
           {list.map(renderCard)}
+        </div>
+      </section>
+
+      <section style={{ marginTop: '1.25rem' }}>
+        <h2 style={{ fontSize: '1.1rem' }}>Expression Differences (Automate ↔ Power Apps)</h2>
+        <p className="help">Quickly copy common operator/function equivalents between Power Automate style and Power Apps (Power Fx).</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.75rem' }}>
+          {EXPRESSION_DIFFS.map(renderExpressionCard)}
         </div>
       </section>
 
