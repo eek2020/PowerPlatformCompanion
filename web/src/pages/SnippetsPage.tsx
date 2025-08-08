@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { snippetsMock, type Snippet } from '../data/snippetsMock'
+import { isSnippetArray } from '../utils/validators'
 
 export default function SnippetsPage() {
   const [query, setQuery] = useState('')
@@ -13,11 +14,14 @@ export default function SnippetsPage() {
         const res = await fetch('/snippets.example.json', { cache: 'no-store' })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const data = await res.json()
+        if (!isSnippetArray(data)) {
+          throw new Error('Invalid schema for snippets JSON')
+        }
         if (active) setSnippets(data as Snippet[])
       } catch (e: any) {
         // Fallback to embedded mock
         if (active) {
-          setError('Using embedded examples (could not load public JSON).')
+          setError('Using embedded examples (failed to load or validate public JSON).')
           setSnippets(snippetsMock)
         }
       }
