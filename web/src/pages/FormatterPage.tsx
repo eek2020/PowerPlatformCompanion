@@ -26,7 +26,7 @@ export default function FormatterPage() {
     <main className="container">
       <h1>Flow Output Formatter</h1>
       <label htmlFor="json">Paste Flow JSON</label>
-      <textarea id="json" rows={10} placeholder="{\n  \"name\": \"example\"\n}" value={raw} onChange={e => setRaw(e.target.value)} />
+      <textarea id="json" rows={10} placeholder='{ "name": "example" }' value={raw} onChange={e => setRaw(e.target.value)} />
       <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>
         <button onClick={prettyPrint}>Pretty Print</button>
         <button onClick={clearAll}>Clear</button>
