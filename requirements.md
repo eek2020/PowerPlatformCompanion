@@ -1,6 +1,6 @@
 # Power Platform Companion – Requirements
 
-> Working title: **MakerMate** (renameable). A lightweight, offline-first companion tool for Power Platform makers that accelerates design, build, troubleshooting, and governance.
+> Working title: **MakerMate**. A lightweight, offline-first companion tool for Power Platform makers that accelerates design, build, troubleshooting, and governance.
 
 ---
 
