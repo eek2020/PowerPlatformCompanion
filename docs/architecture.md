@@ -58,6 +58,16 @@ Snippets page cards (`web/src/pages/SnippetsPage.tsx`) are constrained with `max
 - Items are mapped to a view-model adding flags (`dueSoon`, `dueThisOrPrev`) and converting `due` to `Date` for display.
 - Users can select an item to open an inline details panel with quick actions and link out to the official source when available.
 
+### Optional M365 Public Roadmap API
+
+- Enable via `VITE_M365_SOURCE=on` (e.g. in `web/.env.local`).
+- Dev-only Vite proxy maps `/api/m365` → `https://www.microsoft.com/releasecommunications/api/v1/m365` to avoid CORS.
+- When enabled, fetches from `/api/m365`, maps items into the internal `RoadmapItem` shape, and caches under:
+  - `mm.roadmap.m365.cache.v1`
+  - `mm.roadmap.m365.cacheAt`
+- If API is unavailable or returns no items, falls back to local JSON and embedded examples.
+- Deep link uses the API-provided `link` when present; otherwise falls back to `https://roadmap.microsoft.com/?search=<title+area>`.
+
 ## Extensibility
 
 - Each feature lives in its own page component under `web/src/pages/` with small utilities colocated or in `web/src/utils/`.

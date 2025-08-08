@@ -35,10 +35,6 @@ export default function RoadmapPage() {
   useEffect(() => {
     let active = true
 
-    const CACHE_KEY = 'mm.roadmap.cache.v1'
-    const CACHE_AT_KEY = 'mm.roadmap.cacheAt'
-    const TTL_MS = 6 * 60 * 60 * 1000 // 6 hours
-
     const applyData = (data: RoadmapItem[]) => {
       if (!active) return
       setItems(data)
@@ -46,21 +42,77 @@ export default function RoadmapPage() {
       if (selected && !data.some(d => d.id === selected.id)) setSelected(null)
     }
 
+    const mapM365Item = (x: any): RoadmapItem | null => {
+      try {
+        const id = String(x.Id ?? x.id ?? x.FeatureID ?? x.FeatureId ?? x.featureId ?? '')
+        const title = String(x.Title ?? x.title ?? x.Name ?? x.name ?? '')
+        if (!id || !title) return null
+        const desc = x.Description ?? x.description ?? x.Summary ?? x.summary
+        const workload = x.Workload ?? x.Product ?? x.Area ?? x.Workloads ?? x.Category
+        const lifecycle = x.Status ?? x.status ?? x.Lifecycle ?? x.lifecycle ?? 'Planned'
+        const target = x.TargetDate ?? x.targetDate ?? x.DueDate ?? x.dueDate ?? x.ReleaseDate ?? x.releaseDate
+        const link = x.Link ?? x.link ?? x.Permalink ?? x.permalink ?? x.Url ?? x.url
+        const area = typeof workload === 'string' ? normalizeArea(workload) : String(workload ?? '')
+        const due = target ? new Date(target).toISOString() : new Date().toISOString()
+        const status = normalizeStatus(String(lifecycle))
+        return { id, title, area: area || 'Other', status, due, link, description: typeof desc === 'string' ? desc : undefined }
+      } catch { return null }
+    }
+
+    const normalizeArea = (w: string): string => {
+      const s = w.toLowerCase()
+      if (s.includes('automate') || s.includes('flow')) return 'Power Automate'
+      if (s.includes('power apps') || s.includes('canvas') || s.includes('model-driven')) return 'Power Apps'
+      if (s.includes('dataverse') || s.includes('cds')) return 'Dataverse'
+      if (s.includes('power pages')) return 'Power Pages'
+      if (s.includes('power bi')) return 'Power BI'
+      return w
+    }
+
+    const normalizeStatus = (v: string): RoadmapItem['status'] => {
+      const s = v.toLowerCase()
+      if (s.includes('launch')) return 'Launched'
+      if (s.includes('rolling')) return 'Rolling out'
+      if (s.includes('develop')) return 'In development'
+      return 'Planned'
+    }
+
+    const isM365On = String((import.meta as any).env?.VITE_M365_SOURCE ?? '').toLowerCase() === 'on'
+
     const load = async () => {
       try {
+        if (isM365On) {
+          // Try cache first
+          const cacheKey = 'mm.roadmap.m365.cache.v1'
+          const cacheAtKey = 'mm.roadmap.m365.cacheAt'
+          const cached = localStorage.getItem(cacheKey)
+          const cachedAt = Number(localStorage.getItem(cacheAtKey) ?? '0')
+          const sixHoursMs = 6 * 60 * 60 * 1000
+          if (cached && Date.now() - cachedAt < sixHoursMs) {
+            const data = JSON.parse(cached) as RoadmapItem[]
+            applyData(data)
+          }
+          // Always try to refresh
+          const res = await fetch('/api/m365', { cache: 'no-store' })
+          if (!res.ok) throw new Error(`M365 HTTP ${res.status}`)
+          const raw = await res.json()
+          const arr: any[] = Array.isArray(raw) ? raw : Array.isArray(raw?.items) ? raw.items : Array.isArray(raw?.value) ? raw.value : []
+          const mapped = arr.map(mapM365Item).filter(Boolean) as RoadmapItem[]
+          if (mapped.length) {
+            localStorage.setItem(cacheKey, JSON.stringify(mapped))
+            localStorage.setItem(cacheAtKey, String(Date.now()))
+            applyData(mapped)
+            return
+          }
+          // If mapping failed or no items, fall through to local
+        }
+        // Local JSON fallback (and default when flag off)
         const res = await fetch('/roadmap.example.json', { cache: 'no-store' })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const data = await res.json() as RoadmapItem[]
-        localStorage.setItem(CACHE_KEY, JSON.stringify(data))
-        localStorage.setItem(CACHE_AT_KEY, String(Date.now()))
-        applyData(data)
+        if (active) setItems(data)
       } catch (e) {
-        // Use cache or fallback samples
-        const raw = localStorage.getItem(CACHE_KEY)
-        if (raw) {
-          try { applyData(JSON.parse(raw)) } catch {}
-        }
-        if (active && !raw) {
+        if (active) {
           setError('Using embedded examples (failed to load roadmap).')
           applyData([
             { id: 'rm1', title: 'Power Fx improvements', area: 'Power Apps', status: 'In development', due: new Date().toISOString(), link: 'https://roadmap.microsoft.com', description: 'Enhancements to Power Fx functions, performance, and editor experience.' },
@@ -71,8 +123,9 @@ export default function RoadmapPage() {
     }
 
     // Serve cached first if fresh, then background refresh
-    const cached = localStorage.getItem(CACHE_KEY)
-    const cachedAt = Number(localStorage.getItem(CACHE_AT_KEY) || '0')
+    const cached = localStorage.getItem('mm.roadmap.cache.v1')
+    const cachedAt = Number(localStorage.getItem('mm.roadmap.cacheAt') || '0')
+    const TTL_MS = 6 * 60 * 60 * 1000
     if (cached) {
       try {
         const data = JSON.parse(cached) as RoadmapItem[]
@@ -84,18 +137,11 @@ export default function RoadmapPage() {
     }
 
     // Periodic refresh every 30 minutes
-    const interval = window.setInterval(load, 30 * 60 * 1000)
-    // Refresh on tab focus
-    const onFocus = () => load()
-    window.addEventListener('visibilitychange', onFocus)
-
-    return () => {
-      active = false
-      window.clearInterval(interval)
-      window.removeEventListener('visibilitychange', onFocus)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    const interval = setInterval(load, 30 * 60 * 1000)
+    const onVis = () => { if (document.visibilityState === 'visible') load() }
+    document.addEventListener('visibilitychange', onVis)
+    return () => { active = false; clearInterval(interval); document.removeEventListener('visibilitychange', onVis) }
+  }, [selected, notifyMonths])
 
   const now = new Date()
   const filtered = useMemo(() => {
