@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { estimatingStore } from '../state/estimating'
 
 export type TShirt = 'XS' | 'S' | 'M' | 'L' | 'XL'
 export type Complexity = 'Simple' | 'Moderate' | 'Complex'
@@ -56,6 +57,10 @@ export default function PlanningPage() {
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+    // Mirror into shared Estimating store for cross-page sync
+    try {
+      estimatingStore.setPlanning(items)
+    } catch {}
   }, [items])
 
   const sizes: TShirt[] = ['XS', 'S', 'M', 'L', 'XL']

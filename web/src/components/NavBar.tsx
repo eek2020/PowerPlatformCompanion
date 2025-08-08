@@ -60,10 +60,17 @@ export default function NavBar() {
               <span className="nav__label">Resources</span>
             </NavLink>
           </li>
+          <li className="nav__section" aria-label="Estimating">Estimating</li>
           <li>
             <NavLink to="/planning" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
               <span className="nav__icon">🗓️</span>
               <span className="nav__label">Planning</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/licensing" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
+              <span className="nav__icon">🧾</span>
+              <span className="nav__label">Licensing</span>
             </NavLink>
           </li>
           <li>
@@ -94,12 +101,6 @@ export default function NavBar() {
             <NavLink to="/dataverse" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
               <span className="nav__icon">🗂️</span>
               <span className="nav__label">Dataverse Lookup</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/licensing" className={({ isActive }) => isActive ? 'nav__item active' : 'nav__item'}>
-              <span className="nav__icon">🧾</span>
-              <span className="nav__label">Licensing</span>
             </NavLink>
           </li>
           <li>
