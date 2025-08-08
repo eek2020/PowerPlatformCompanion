@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { estimatingStore, type LicensingDataset } from '../state/estimating'
+import { extractPdfText } from '../utils/pdf'
 
 export default function LicensingPage() {
   // Feature flag: Phase 2 (PDF fetch/parse) is temporarily disabled
@@ -53,9 +54,22 @@ export default function LicensingPage() {
     }
   }
 
-  const onUploadPdf = async (_file: File) => {
-    // Phase 2: parse PDFs. For now, show a message.
-    setStatus('PDF parsing will be added in Phase 2. Please upload JSON for now.')
+  const onUploadPdf = async (file: File) => {
+    try {
+      setStatus('Parsing PDF…')
+      const buf = await file.arrayBuffer()
+      const parsed = await extractPdfText(buf)
+      const ds: LicensingDataset = {
+        versionTag: 'pdf:local:v1',
+        sourceUrl: file.name,
+        fetchedAt: new Date().toISOString(),
+        data: { pdfLocal: { pageCount: parsed.pageCount }, text: parsed.text, pages: parsed.pages }
+      }
+      estimatingStore.setLicensing(ds)
+      setStatus(`Parsed PDF: ${parsed.pageCount} pages`) 
+    } catch (e: any) {
+      setStatus(`Failed to parse PDF: ${String(e?.message || e)}`)
+    }
   }
 
   const fetchPdfByUrl = async () => {
@@ -115,21 +129,22 @@ export default function LicensingPage() {
           />
           <span role="button" aria-label="Upload licensing JSON" className="button-like">Upload JSON</span>
         </label>
+        {/* Keep PDF upload visible; URL fetch remains hidden until enabled */}
+        <label style={{ display: 'inline-block' }}>
+          <input
+            type="file"
+            accept="application/pdf"
+            style={{ display: 'none' }}
+            onChange={e => {
+              const f = e.target.files?.[0]
+              if (f) onUploadPdf(f)
+              e.currentTarget.value = ''
+            }}
+          />
+          <span role="button" aria-label="Upload licensing PDF" className="button-like">Upload PDF</span>
+        </label>
         {enablePdfPhase2 && (
           <>
-            <label style={{ display: 'inline-block' }}>
-              <input
-                type="file"
-                accept="application/pdf"
-                style={{ display: 'none' }}
-                onChange={e => {
-                  const f = e.target.files?.[0]
-                  if (f) onUploadPdf(f)
-                  e.currentTarget.value = ''
-                }}
-              />
-              <span role="button" aria-label="Upload licensing PDF" className="button-like">Upload PDF (Phase 2)</span>
-            </label>
             <input
               type="url"
               placeholder="https://.../licensing.pdf"
