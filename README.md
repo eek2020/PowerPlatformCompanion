@@ -6,6 +6,7 @@ A companion to help with all things Power Platform
 
 - **Vision**: see `docs/vision.md` for the product concept and MVP goals.
 - **Background**: see `docs/background.md` for history, prior exploration, and decisions.
+- **App Conversion (Desktop)**: see `docs/appconversion.md` for non‑store macOS/Windows packaging via Tauri/Electron, signing/notarization, and installers.
 - **Architecture**: see `docs/architecture.md` for app layout, state, and extensibility.
 - **Routing**: see `docs/routing.md` for routes and navigation.
 - **Directory Structure**: see `docs/structure.md` for folder overview and conventions.
