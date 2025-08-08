@@ -68,3 +68,16 @@ Data sources: static JSON examples under `web/public/*.example.json` (resources,
 - Simple, testable components (one feature per page under `web/src/pages/`).
 - Persist user preferences only; avoid sensitive data in `localStorage`.
 - Clear licensing/attribution for any third‑party catalogs (icons, resources).
+
+## Success Metrics (v0.x)
+
+- **Time saved**: median time to find/copy a snippet or icon < 15 seconds.
+- **Usage**: >= 3 features used per session on average.
+- **Return rate**: 50% of users return within a week.
+- **Copy actions**: >= 2 copy/export actions per session.
+
+## Non‑goals (for MVP)
+
+- No tenant‑specific or paid data integrations by default.
+- No storage of sensitive data in localStorage.
+- No heavy server‑side or multi‑user sync; focus on local/offline utility.
