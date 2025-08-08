@@ -4,6 +4,7 @@ import { estimatingStore, type LicensingDataset } from '../state/estimating'
 export default function LicensingPage() {
   const [snapshot, setSnapshot] = useState(estimatingStore.getState())
   const [status, setStatus] = useState<string>('')
+  const [pdfUrl, setPdfUrl] = useState<string>('')
 
   useEffect(() => {
     const unsub = estimatingStore.subscribe(() => setSnapshot(estimatingStore.getState()))
@@ -55,6 +56,37 @@ export default function LicensingPage() {
     setStatus('PDF parsing will be added in Phase 2. Please upload JSON for now.')
   }
 
+  const fetchPdfByUrl = async () => {
+    if (!pdfUrl) {
+      setStatus('Enter a PDF URL first.')
+      return
+    }
+    try {
+      setStatus('Fetching PDF…')
+      const resp = await fetch('/api/licensing/fetch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: pdfUrl })
+      })
+      if (!resp.ok) {
+        const t = await resp.text()
+        setStatus(`Fetch failed (${resp.status}). ${t}`)
+        return
+      }
+      const payload = await resp.json()
+      const ds: LicensingDataset = {
+        versionTag: 'pdf:v1',
+        sourceUrl: pdfUrl,
+        fetchedAt: new Date().toISOString(),
+        data: { pdf: payload }
+      }
+      estimatingStore.setLicensing(ds)
+      setStatus(`Fetched PDF (${payload?.size ?? 0} bytes).`)
+    } catch (e: any) {
+      setStatus(`Error: ${String(e?.message || e)}`)
+    }
+  }
+
   return (
     <main className="container">
       <h1>Licensing</h1>
@@ -86,6 +118,15 @@ export default function LicensingPage() {
           />
           <span role="button" aria-label="Upload licensing PDF" className="button-like">Upload PDF (Phase 2)</span>
         </label>
+        <input
+          type="url"
+          placeholder="https://.../licensing.pdf"
+          value={pdfUrl}
+          onChange={e => setPdfUrl(e.target.value)}
+          style={{ minWidth: 300 }}
+          aria-label="PDF URL"
+        />
+        <button onClick={fetchPdfByUrl} aria-label="Fetch licensing PDF" className="button-like">Fetch PDF</button>
         <div aria-live="polite" style={{ minHeight: 20, color: '#475569' }}>{status}</div>
       </section>
 
@@ -94,6 +135,9 @@ export default function LicensingPage() {
         {dataset ? (
           <div>
             <p><strong>Version:</strong> {dataset.versionTag || 'n/a'} &nbsp; <strong>Source:</strong> {dataset.sourceUrl || 'manual upload'} &nbsp; <strong>Fetched:</strong> {dataset.fetchedAt || 'n/a'}</p>
+            {dataset.data?.pdf && (
+              <p><strong>PDF:</strong> {dataset.data.pdf.contentType} • {dataset.data.pdf.size} bytes</p>
+            )}
             <details>
               <summary>View raw (first 1,000 chars)</summary>
               <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(dataset.data, null, 2).slice(0, 1000)}</pre>

@@ -13,6 +13,13 @@
   status = 200
   force = true
 
+# Licensing serverless fetch
+[[redirects]]
+  from = "/api/licensing/fetch"
+  to = "/.netlify/functions/licensing-fetch"
+  status = 200
+  force = true
+
 # SPA fallback
 [[redirects]]
   from = "/*"
