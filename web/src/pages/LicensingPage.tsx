@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { estimatingStore, type LicensingDataset } from '../state/estimating'
 
 export default function LicensingPage() {
+  // Feature flag: Phase 2 (PDF fetch/parse) is temporarily disabled
+  const enablePdfPhase2 = false
   const [snapshot, setSnapshot] = useState(estimatingStore.getState())
   const [status, setStatus] = useState<string>('')
   const [pdfUrl, setPdfUrl] = useState<string>('')
@@ -113,28 +115,32 @@ export default function LicensingPage() {
           />
           <span role="button" aria-label="Upload licensing JSON" className="button-like">Upload JSON</span>
         </label>
-        <label style={{ display: 'inline-block' }}>
-          <input
-            type="file"
-            accept="application/pdf"
-            style={{ display: 'none' }}
-            onChange={e => {
-              const f = e.target.files?.[0]
-              if (f) onUploadPdf(f)
-              e.currentTarget.value = ''
-            }}
-          />
-          <span role="button" aria-label="Upload licensing PDF" className="button-like">Upload PDF (Phase 2)</span>
-        </label>
-        <input
-          type="url"
-          placeholder="https://.../licensing.pdf"
-          value={pdfUrl}
-          onChange={e => setPdfUrl(e.target.value)}
-          style={{ minWidth: 300 }}
-          aria-label="PDF URL"
-        />
-        <button onClick={fetchPdfByUrl} aria-label="Fetch licensing PDF" className="button-like">Fetch PDF</button>
+        {enablePdfPhase2 && (
+          <>
+            <label style={{ display: 'inline-block' }}>
+              <input
+                type="file"
+                accept="application/pdf"
+                style={{ display: 'none' }}
+                onChange={e => {
+                  const f = e.target.files?.[0]
+                  if (f) onUploadPdf(f)
+                  e.currentTarget.value = ''
+                }}
+              />
+              <span role="button" aria-label="Upload licensing PDF" className="button-like">Upload PDF (Phase 2)</span>
+            </label>
+            <input
+              type="url"
+              placeholder="https://.../licensing.pdf"
+              value={pdfUrl}
+              onChange={e => setPdfUrl(e.target.value)}
+              style={{ minWidth: 300 }}
+              aria-label="PDF URL"
+            />
+            <button onClick={fetchPdfByUrl} aria-label="Fetch licensing PDF" className="button-like">Fetch PDF</button>
+          </>
+        )}
         <div aria-live="polite" style={{ minHeight: 20, color: '#475569' }}>{status}</div>
       </section>
 
