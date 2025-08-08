@@ -1,5 +1,13 @@
 # Roadmap
 
+## Progress 2025-08-08
+
+- Verified local app boot via Vite (`npm run dev`) in `web/`.
+- Hardened Netlify function `netlify/functions/licensing-fetch.ts`:
+  - Added URL path normalization (`normalizeUrl`).
+  - Switched to browser-like headers (User-Agent/Accept/Language/Cache-Control).
+  - Improved error payload with `statusText` and echo of final URL.
+
 ## Licensing Phase 2: PDF Fetch + Parsing
 
 Status: Paused (UI hidden behind feature flag)
