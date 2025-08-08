@@ -66,3 +66,27 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Utilities */
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Forms */
+textarea, input[type="text"], input[type="search"], select {
+  width: 100%;
+  background: transparent;
+  color: inherit;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+}
+textarea:focus, input:focus, select:focus {
+  outline: 2px solid #646cff;
+  border-color: #646cff;
+}
+label { display: block; margin: 0.5rem 0; opacity: 0.85; }
+small.help { opacity: 0.7; }
