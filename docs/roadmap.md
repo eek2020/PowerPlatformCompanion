@@ -32,3 +32,47 @@ Notes:
 - Feature flag in `web/src/pages/LicensingPage.tsx` (`enablePdfPhase2`) currently false.
 - Netlify function: `netlify/functions/licensing-fetch.ts`.
 - Redirect: `/api/licensing/fetch` → `/.netlify/functions/licensing-fetch` in `netlify.toml`.
+
+---
+
+## Epic: Solution Architecture Workspace
+
+Features to plan and implement:
+
+- __Requirements Ingestion & Dual Solutioning__
+  - Import a spreadsheet (CSV/XLSX) of requirements into a structured table.
+  - For each requirement, generate two detailed solution options:
+    - Option A: Power Platform approach.
+    - Option B: Azure approach.
+  - Allow SAs to edit/refine the AI-generated responses inline.
+  - Support export (CSV/Markdown/PDF/DOCX) once all requirements are addressed.
+  - Technical notes: use SheetJS for ingest; serverless AI via OpenAI/Azure OpenAI; persist drafts locally and/or in workspace storage.
+
+- __HLD Generator with Mermaid__
+  - Accept input docs (briefs/notes) and produce Mermaid diagrams (C4/HLD style) plus narrative.
+  - Preview Mermaid, allow edit of code and text, and export (PNG/SVG/MD).
+  - Technical notes: client-side mermaid rendering; AI prompt scaffolds for diagram and narrative; file upload pipeline.
+
+- __Azure ARM Catalog & One-Click Deploy__
+  - Browse curated catalog (seed from Microsoft Quickstart templates).
+  - Upload custom ARM templates and surface as clickable deployments.
+  - Parameterize and launch to Azure Portal or via CLI workflow.
+
+- __ERD Designer__
+  - Define tables, fields, datatypes, and attributes; import/export CSVs.
+  - Generate ERD (Mermaid erDiagram or alternative) and allow edits.
+  - Optional AI assist to propose schema from requirement text.
+  - Export ERD as PNG/SVG/MD.
+
+Backlog tasks (initial cut):
+- [ ] Define data schemas: `Requirement`, `SolutionOption`, `HLDArtifact`, `ArmTemplate`, `Entity`, `Field`.
+- [ ] Spreadsheet ingest (CSV/XLSX) pipeline and mapping UI.
+- [ ] AI service abstraction (provider-agnostic) and serverless endpoints.
+- [ ] Dual-option solution UI with edit + status tracking (done/todo/needs-review).
+- [ ] Exporters (CSV, Markdown; stretch: PDF/DOCX).
+- [ ] Mermaid preview/editor component shared across HLD/ERD.
+- [ ] ARM catalog data model + upload flow + deploy action.
+- [ ] ERD designer CRUD + CSV round-trip + diagram export.
+- [ ] Auth/keys: secure storage for AI keys (if used) and ARM deploy contexts.
+
+See `docs/solution-architecture.md` for detailed specs.
