@@ -1,0 +1,9 @@
+{
+  "error_text": "The data source may not be able to apply this filter",
+  "connector": "SharePoint",
+  "root_cause": "Non-delegable function used in Filter()",
+  "fix": "Replace StartsWith with Search or index column and delegate-friendly pattern",
+  "refs": [
+    "https://learn.microsoft.com/power-apps/maker/canvas-apps/delegation-overview"
+  ]
+}

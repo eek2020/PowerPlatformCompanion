@@ -1,0 +1,69 @@
+{
+  "tools": [
+    {
+      "name": "extract_pdf_tables",
+      "description": "Extract text and tables from a licensing PDF",
+      "args_schema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "max_pages": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "sections": {
+            "type": "array"
+          },
+          "tables": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    {
+      "name": "search_web",
+      "description": "Meta-search for MVP blogs and YouTube channels",
+      "args_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query"
+        ]
+      },
+      "returns": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "error_shape": {
+    "error": "string",
+    "hint": "string"
+  }
+}

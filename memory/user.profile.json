@@ -1,0 +1,14 @@
+{
+  "maker_prefs": {
+    "connectors": [
+      "SharePoint",
+      "Dataverse"
+    ],
+    "naming_prefix": "ppc_",
+    "export_formats": [
+      "markdown",
+      "csv",
+      "json"
+    ]
+  }
+}

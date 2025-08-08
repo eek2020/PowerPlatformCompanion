@@ -1,0 +1,13 @@
+{
+  "name": "Example MVP",
+  "areas": [
+    "Power Apps",
+    "Power Automate"
+  ],
+  "blog_url": "https://example.com",
+  "rss_url": "https://example.com/feed",
+  "youtube_url": "https://www.youtube.com/@example",
+  "channel_id": "UC_example",
+  "twitter": "@example",
+  "confidence": 0.7
+}

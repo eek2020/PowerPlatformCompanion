@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "properties": {
+    "doc_id": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "effective_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "title": {
+      "type": "string"
+    },
+    "heading_path": {
+      "type": "string"
+    },
+    "page": {
+      "type": "integer"
+    },
+    "text": {
+      "type": "string"
+    },
+    "citations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "doc_id",
+    "source",
+    "title",
+    "page",
+    "text"
+  ]
+}

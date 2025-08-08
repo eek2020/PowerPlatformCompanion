@@ -1,0 +1,13 @@
+{
+  "id": "fx-date-iso-uk-001",
+  "title": "ISO date to UK dd/mm/yyyy",
+  "tags": [
+    "PowerFx",
+    "datetime",
+    "format"
+  ],
+  "code": "Text(DateValue(varIsoDate), \"dd/mm/yyyy\")",
+  "explanation": "Converts ISO date to UK format.",
+  "source": "MakerMate",
+  "tested": true
+}

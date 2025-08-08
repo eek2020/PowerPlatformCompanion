@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "properties": {
+    "source": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "product": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "licence_terms": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "source",
+    "date"
+  ]
+}
