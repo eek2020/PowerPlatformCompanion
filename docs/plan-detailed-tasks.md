@@ -14,17 +14,25 @@ Authoritative task list tracking what has happened, what is in progress, and wha
 - [Done][Infra] Verify local dev server flow: `npm install` + `npm run dev` (Vite) — app loads.
 - [Done][Docs] Add roadmap progress note and Solution Architecture epic overview.
 - [Done][Docs] Create comprehensive product plan and link from roadmap.
+- [Done][Docs][SA] Create `docs/solution-architecture.md` and align related docs (`routing.md`, `schemas.md`, `plan-high-level.md`, root `README.md`).
+- [Done][Types][SA] Add models and storage keys in `web/src/types/sa.ts` (`Requirement`, `SolutionOption`, `HLDArtifact`, `ArmTemplate`, `Entity`, `Field`, `SA_STORAGE_KEYS`).
+- [Done][AI][SA] Add provider‑agnostic AI client abstraction in `web/src/lib/ai/client.ts` for `generate-options`, `hld-draft`, `erd-draft`.
+- [Done][AI][SA] Netlify function stubs with mock responses: `netlify/functions/sa-generate-options.ts`, `netlify/functions/sa-hld-draft.ts`, `netlify/functions/sa-erd-draft.ts`; redirects added in `netlify.toml`.
+- [Done][UI][SA] Scaffold pages: `SARequirementsPage`, `SAHldPage`, `SAArmCatalogPage`, `SAErdPage`; routes wired in `web/src/App.tsx`; navigation added in `web/src/components/NavBar.tsx`.
 
 ## Present (In Progress)
 - [In Progress][Licensing] Licensing Phase 2: robust fetch strategies and PDF parsing plan (UI behind flag).
 - [In Progress][Docs] Consolidating planning docs into two canonical files: high-level phases/history and detailed tasks (this doc).
+- [In Progress][Requirements][SA] CSV/XLSX ingest UI with column mapping (SheetJS), inline editing, and export.
+- [In Progress][HLD][SA] Mermaid editor with live preview; export PNG/SVG/MD; integrate mock `hld-draft` API.
+- [In Progress][ERD][SA] CRUD UI for entities/fields; CSV import/export; Mermaid `erDiagram` rendering; integrate mock `erd-draft` API.
+- [In Progress][ARM][SA] Seed and manage ARM catalog; upload validation; deploy link helpers.
+- [In Progress][Security][SA] Input validation and basic rate limiting/redaction in serverless functions; add structured logs.
 
 ## Future (Planned)
 
 ### Requirements Ingestion & Dual Solutioning
-- [Planned][Requirements] Define data schemas: `Requirement`, `SolutionOption`.
 - [Planned][Requirements] Implement CSV/XLSX ingest via SheetJS with column mapping UI.
-- [Planned][AI] Build provider-agnostic AI service (OpenAI/Azure OpenAI) via Netlify function.
 - [Planned][Requirements] Generate Option A (Power Platform) and Option B (Azure) per requirement with structured guidance.
 - [Planned][Requirements] Inline editors with markdown support; status tracking (todo/needs-review/done).
 - [Planned][Requirements] Export results to CSV and Markdown; stretch: DOCX/PDF.
@@ -32,7 +40,6 @@ Authoritative task list tracking what has happened, what is in progress, and wha
 
 ### HLD Generator (Mermaid)
 - [Planned][HLD] Mermaid editor + live preview component.
-- [Planned][AI] Prompt to draft Mermaid diagram + narrative from brief and optional uploaded docs.
 - [Planned][HLD] Edit & refine flow; export Mermaid MD plus PNG/SVG snapshots.
 - [Planned][Security] Sanitize uploaded text; limit file types/sizes client-side.
 
@@ -79,7 +86,7 @@ Authoritative task list tracking what has happened, what is in progress, and wha
 
 ## Cross-References
 - High-level plan: `docs/plan-high-level.md`
-- Specs: `docs/solution-architecture.md` (superseded by high-level + this doc for planning; still useful for detail)
+- Specs: `docs/solution-architecture.md` (authoritative detailed spec for the SA workspace; this doc tracks tasks/status)
 - Product plan (superseded): `docs/product-delivery-plan.md`
 
 ## Next Options

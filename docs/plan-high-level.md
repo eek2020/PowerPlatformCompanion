@@ -47,7 +47,8 @@ A companion for Solution Architects to plan, design, and validate Microsoft solu
 
 ## References
 - Detailed tasks: `docs/plan-detailed-tasks.md`
-- Previous docs merged here: `docs/product-delivery-plan.md` (superseded), `docs/solution-architecture.md` (superseded).
+- Previous docs merged here: `docs/product-delivery-plan.md` (superseded).
+- Detailed spec for Solution Architecture workspace: `docs/solution-architecture.md`.
 
 ## Next Options
 

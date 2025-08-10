@@ -16,6 +16,10 @@ import RoadmapPage from './pages/RoadmapPage'
 import IconsPage from './pages/IconsPage'
 import PlanningPage from './pages/PlanningPage'
 import LandingPage from './pages/LandingPage'
+import SARequirementsPage from './pages/sa/SARequirementsPage'
+import SAHldPage from './pages/sa/SAHldPage'
+import SAArmCatalogPage from './pages/sa/SAArmCatalogPage'
+import SAErdPage from './pages/sa/SAErdPage'
 
 function App() {
   return (
@@ -37,6 +41,10 @@ function App() {
         <Route path="/roadmap" element={<RoadmapPage />} />
         <Route path="/planning" element={<PlanningPage />} />
         <Route path="/icons" element={<IconsPage />} />
+        <Route path="/sa/requirements" element={<SARequirementsPage />} />
+        <Route path="/sa/hld" element={<SAHldPage />} />
+        <Route path="/sa/arm" element={<SAArmCatalogPage />} />
+        <Route path="/sa/erd" element={<SAErdPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="*" element={<div className="container"><h1>Not Found</h1></div>} />

@@ -12,6 +12,7 @@ A companion to help with all things Power Platform
 - **Directory Structure**: see `docs/structure.md` for folder overview and conventions.
 - **Security**: see `docs/security.md` for current boundaries and future hardening.
 - **Schemas**: see `docs/schemas.md` for JSON shapes and localStorage keys.
+- **Solution Architecture (spec)**: see `docs/solution-architecture.md` for the workspace overview, acceptance criteria, data contracts, and flows.
 
 ## Repo Structure (high‑level)
 
@@ -30,6 +31,10 @@ A companion to help with all things Power Platform
 
 These are available in the React app under `web/` and surfaced via the left sidebar:
 
+Sidebar notes:
+- Collapsed width is controlled by CSS var `--sidebar-w-collapsed` (currently `80px`) in `web/src/index.css` and used to offset `#root`.
+- Clicking a main rail item auto-expands the sidebar and opens its submenu (implemented in `web/src/components/NavBar.tsx`).
+
 - **Snippets**: Searchable snippet bank loaded from `web/public/snippets.example.json` with runtime validation.
 - **Delegation Check**: Heuristic analysis of expressions by data source (Dataverse/SharePoint/SQL/Other).
 - **Flow Formatter**: JSON pretty‑printer with large payload warnings and copy support.
@@ -40,6 +45,10 @@ These are available in the React app under `web/` and surfaced via the left side
 - **Settings (enhanced)**: Controls the roadmap notification window in months, persisted in `localStorage` key `mm.notifyWindowMonths`.
 - **Icons (new)**: Browse a small built‑in set, customise (size/stroke/colour), import your SVG, and copy as SVG/Data URI/Power Apps Image formula. Route: `/icons`.
 - **Planning (new)**: Quick effort planning with category/component/complexity and T‑shirt sizing. Estimates are derived from configurable size→hours mapping stored in localStorage. CSV export is via a single “Save As…” action which uses the File System Access API when available (native Save dialog) and falls back to a standard download otherwise. Route: `/planning`.
+- **Solution Architecture (new, scaffolded)**: Workspace with four tabs and mock APIs to unblock UI implementation. Appears as its own rail labeled “Solution Arch”.
+  - Routes: `/sa/requirements`, `/sa/hld`, `/sa/arm`, `/sa/erd`
+  - Serverless endpoints (mock): `/api/sa/generate-options`, `/api/sa/hld-draft`, `/api/sa/erd-draft` (see `netlify/functions/` and `netlify.toml`).
+  - Types and contracts in `web/src/types/sa.ts`; client abstraction in `web/src/lib/ai/client.ts`.
 
 ### Data files
 

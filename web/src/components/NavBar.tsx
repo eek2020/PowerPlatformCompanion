@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import './NavBar.css'
 
 // Outline SVG icons (monochrome, scalable)
@@ -41,16 +41,27 @@ const IconGear = () => (
     <circle cx="12" cy="12" r="3"/>
   </svg>
 )
+// Simple blocks icon for Solution Architecture rail
+const IconBlocks = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className="rail__icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="8" height="8" rx="1"/>
+    <rect x="13" y="3" width="8" height="8" rx="1"/>
+    <rect x="3" y="13" width="8" height="8" rx="1"/>
+    <rect x="13" y="13" width="8" height="8" rx="1"/>
+  </svg>
+)
 export default function NavBar() {
   const [collapsed, setCollapsed] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
-  type RailKey = 'home' | 'estimating' | 'error' | 'tools' | 'resources' | 'settings'
+  type RailKey = 'home' | 'estimating' | 'error' | 'tools' | 'sa' | 'resources' | 'settings'
   const routeRail: RailKey = useMemo(() => {
     const p = location.pathname
     if (p.startsWith('/planning') || p.startsWith('/licensing')) return 'estimating'
     if (p.startsWith('/expression') || p.startsWith('/delegation') || p.startsWith('/diagnostics')) return 'error'
     if (p.startsWith('/snippets') || p.startsWith('/formatter') || p.startsWith('/dataverse') || p.startsWith('/packs')) return 'tools'
+    if (p.startsWith('/sa/')) return 'sa'
     if (p.startsWith('/icons') || p.startsWith('/roadmap') || p.startsWith('/about')) return 'resources'
     if (p.startsWith('/settings')) return 'settings'
     return 'home'
@@ -64,6 +75,13 @@ export default function NavBar() {
     if (collapsed) document.body.classList.add(cls)
     else document.body.classList.remove(cls)
   }, [collapsed])
+
+  // Ensure clicking a rail title always opens its submenu.
+  const openRail = (rail: RailKey, path: string) => {
+    setActiveRail(rail)
+    if (collapsed) setCollapsed(false)
+    if (path) navigate(path)
+  }
 
   return (
     <aside className={collapsed ? 'sidebar collapsed' : 'sidebar'} aria-label="Sidebar">
@@ -84,23 +102,61 @@ export default function NavBar() {
       </div>
       <div className="sidebar__container">
         <aside className="sidebar__rail" aria-label="Primary sections">
-          <button className={activeRail==='home'? 'rail__btn active':'rail__btn'} onClick={() => setActiveRail('home')} aria-label="Home">
+          <button
+            className={activeRail==='home'? 'rail__btn active':'rail__btn'}
+            onClick={() => openRail('home','/')}
+            aria-label="Home"
+          >
             <IconHome />
+            <span className="rail__label">Home</span>
           </button>
-          <button className={activeRail==='estimating'? 'rail__btn active':'rail__btn'} onClick={() => setActiveRail('estimating')} aria-label="Estimating">
+          <button
+            className={activeRail==='estimating'? 'rail__btn active':'rail__btn'}
+            onClick={() => openRail('estimating','/planning')}
+            aria-label="Estimating"
+          >
             <IconCalc />
+            <span className="rail__label">Estimating</span>
           </button>
-          <button className={activeRail==='error'? 'rail__btn active':'rail__btn'} onClick={() => setActiveRail('error')} aria-label="Error Help">
+          <button
+            className={activeRail==='error'? 'rail__btn active':'rail__btn'}
+            onClick={() => openRail('error','/expression')}
+            aria-label="Error Help"
+          >
             <IconAlert />
+            <span className="rail__label">Error Help</span>
           </button>
-          <button className={activeRail==='tools'? 'rail__btn active':'rail__btn'} onClick={() => setActiveRail('tools')} aria-label="Tools">
+          <button
+            className={activeRail==='tools'? 'rail__btn active':'rail__btn'}
+            onClick={() => openRail('tools','/snippets')}
+            aria-label="Tools"
+          >
             <IconWrench />
+            <span className="rail__label">Tools</span>
           </button>
-          <button className={activeRail==='resources'? 'rail__btn active':'rail__btn'} onClick={() => setActiveRail('resources')} aria-label="Resources">
+          <button
+            className={activeRail==='sa'? 'rail__btn active':'rail__btn'}
+            onClick={() => openRail('sa','/sa/requirements')}
+            aria-label="Solution Architecture"
+          >
+            <IconBlocks />
+            <span className="rail__label">Solution Arch</span>
+          </button>
+          <button
+            className={activeRail==='resources'? 'rail__btn active':'rail__btn'}
+            onClick={() => openRail('resources','/icons')}
+            aria-label="Resources"
+          >
             <IconGlobe />
+            <span className="rail__label">Resources</span>
           </button>
-          <button className={activeRail==='settings'? 'rail__btn active':'rail__btn'} onClick={() => setActiveRail('settings')} aria-label="Settings">
+          <button
+            className={activeRail==='settings'? 'rail__btn active':'rail__btn'}
+            onClick={() => openRail('settings','/settings')}
+            aria-label="Settings"
+          >
             <IconGear />
+            <span className="rail__label">Settings</span>
           </button>
         </aside>
         {!collapsed && (
@@ -134,6 +190,15 @@ export default function NavBar() {
                 <li><NavLink to="/formatter" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Flow Formatter</NavLink></li>
                 <li><NavLink to="/dataverse" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Dataverse Lookup</NavLink></li>
                 <li><NavLink to="/packs" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Packs</NavLink></li>
+              </ul>
+            )}
+            {activeRail === 'sa' && (
+              <ul className="panel__list">
+                <li className="panel__title">Solution Architecture</li>
+                <li><NavLink to="/sa/requirements" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Requirements</NavLink></li>
+                <li><NavLink to="/sa/hld" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>HLD</NavLink></li>
+                <li><NavLink to="/sa/arm" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>ARM Catalog</NavLink></li>
+                <li><NavLink to="/sa/erd" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>ERD</NavLink></li>
               </ul>
             )}
             {activeRail === 'resources' && (

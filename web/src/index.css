@@ -12,8 +12,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Layout variables */
-  --sidebar-w: 248px;
-  --sidebar-w-collapsed: 64px;
+  --sidebar-w: 476px;
+  --sidebar-w-collapsed: 80px;
 }
 
 /* Global box-sizing to keep widths inside viewport */

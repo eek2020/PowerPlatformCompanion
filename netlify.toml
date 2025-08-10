@@ -20,6 +20,25 @@
   status = 200
   force = true
 
+# Solution Architecture endpoints
+[[redirects]]
+  from = "/api/sa/generate-options"
+  to = "/.netlify/functions/sa-generate-options"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/sa/hld-draft"
+  to = "/.netlify/functions/sa-hld-draft"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/sa/erd-draft"
+  to = "/.netlify/functions/sa-erd-draft"
+  status = 200
+  force = true
+
 # SPA fallback
 [[redirects]]
   from = "/*"

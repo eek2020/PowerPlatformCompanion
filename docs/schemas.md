@@ -53,6 +53,16 @@ A lightweight validator exists in `web/src/utils/validators.ts`.
 - `mm.icons.fillColor: string` — default icon fill colour or `none`.
 - `mm.icons.rounded: '0' | '1'` — rounded linecap/linejoin toggle.
 
+### Solution Architecture workspace keys
+
+The SA workspace uses the following keys (see types in `web/src/types/sa.ts`):
+
+- `mm.sa.requirements.v1: Requirement[]` — imported/edited requirements.
+- `mm.sa.options.v1: SolutionOption[]` — generated and edited dual solution options.
+- `mm.sa.hld.v1: HLDArtifact | null` — the current HLD draft (Mermaid + narrative).
+- `mm.sa.erd.v1: { entities: Entity[]; fields: Field[] }` — ERD designer state.
+- `mm.sa.catalog.v1: ArmTemplate[]` — local ARM templates catalog.
+
 ## Future data sources
 
 - Official roadmap feed (normalized into the above shape).
