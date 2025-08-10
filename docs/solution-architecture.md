@@ -88,3 +88,26 @@ Notes: Implement rate limiting, input validation, and redact PII. Streaming resp
 3. ARM catalog seed + upload + deploy.
 4. ERD designer with CSV round-trip + export.
 5. Polish, tests, docs.
+
+## Requirements Import & AI Analysis
+
+### Flow
+- __Import__: Parse CSV/XLSX in-browser using SheetJS (`xlsx`), map to `Requirement` records.
+- __Analyze__: Call `POST /api/sa/generate-options` with a batch of requirements. The serverless function selects the provider/model and returns two structured options per requirement.
+- __Persist__: Store results via `StorageService` (`web/src/lib/storage.ts`) to avoid re-calling AI for unchanged rows.
+
+### Cost‑Effective Testing Strategy
+- __Mock by default (free)__
+  - Keep Netlify functions in mock mode for local dev and CI. This validates UI flows, schemas, and regression tests at zero cost.
+- __Local LLM option (free)__
+  - Run a small local model via Ollama (e.g., `llama3.1:8b-instruct`) and proxy `/api/sa/generate-options` to it in a dev-only branch. Use `setAITransport()` in `web/src/lib/ai/client.ts` to point to a local endpoint when needed.
+- __Paid smoke tests (low cost)__
+  - Use a small, cost‑efficient model (e.g., OpenAI `gpt-4o-mini` or provider equivalent) for a tiny sample (5–10 requirements) to validate quality.
+  - Keep prompts concise and enforce a compact JSON schema to cap output size.
+  - Batch carefully (small groups), set conservative limits server‑side, and cache results so re-runs are free.
+
+### Cost Controls (implementation notes)
+- __Caching__: Skip AI calls when a requirement’s content hash hasn’t changed. Persist options in local storage.
+- __Batching__: Send small batches to reduce peak tokens and ease debugging.
+- __Determinism__: Low temperature during tests for stable snapshots; switch higher only for exploratory runs.
+- __Redaction__: Trim/clean requirement text before sending to reduce tokens and remove PII.
