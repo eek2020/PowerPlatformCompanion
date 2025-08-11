@@ -32,23 +32,28 @@ A companion to help with all things Power Platform
 These are available in the React app under `web/` and surfaced via the left sidebar:
 
 Sidebar notes:
-- Collapsed width is controlled by CSS var `--sidebar-w-collapsed` (currently `80px`) in `web/src/index.css` and used to offset `#root`.
-- Clicking a main rail item auto-expands the sidebar and opens its submenu (implemented in `web/src/components/NavBar.tsx`).
 
-- **Snippets**: Searchable snippet bank loaded from `web/public/snippets.example.json` with runtime validation.
+- Collapsed width is controlled by CSS var `--sidebar-w-collapsed` (80px) in `web/src/index.css` and used to offset `#root`.
+- Clicking a main rail navigates without auto-expanding when collapsed; expansion is manual.
+- Hover flyout appears only when collapsed; expanded state shows the inline panel (no flyout).
+
+- **Developer Tools**:
+  - **Snippets**: Searchable snippet bank loaded from `web/public/snippets.example.json` with runtime validation.
+  - **Flow Formatter**: JSON pretty‑printer with large payload warnings and copy support.
+  - **Dataverse Lookup**: Helper tooling for Dataverse.
+  - **Packs**: Content packs.
+  - **Icons**: Browse a small built‑in set, customise (size/stroke/colour), import SVG, and copy as SVG/Data URI/Power Apps Image formula. Route: `/icons`.
 - **Delegation Check**: Heuristic analysis of expressions by data source (Dataverse/SharePoint/SQL/Other).
-- **Flow Formatter**: JSON pretty‑printer with large payload warnings and copy support.
 - **Expression Tester (new)**: Basic heuristics to correct common non‑Power Fx syntax (e.g. `&&` → `And`, `||` → `Or`, `!` → `Not`, `==` → `=`). Provides a before/after preview and Apply.
 - **Resources (new)**: Curated YouTube channels and blogs. Loads from `web/public/resources.example.json` with a search box. Planned: live discovery and recommendations.
 - **Diagnostics (new)**: Error message helper with seed heuristics for context and next steps. Planned: inline fixes and diffs.
-- **Roadmap (enhanced)**: Search/filter with icon quick filters, due‑soon notifications, and a modal details view. Uses caching and periodic refresh. Loads from `web/public/roadmap.example.json` by default; optionally uses the M365 Public Roadmap API via `/api/m365`.
-- **Settings (enhanced)**: Controls the roadmap notification window in months, persisted in `localStorage` key `mm.notifyWindowMonths`.
-- **Icons (new)**: Browse a small built‑in set, customise (size/stroke/colour), import your SVG, and copy as SVG/Data URI/Power Apps Image formula. Route: `/icons`.
-- **Planning (new)**: Quick effort planning with category/component/complexity and T‑shirt sizing. Estimates are derived from configurable size→hours mapping stored in localStorage. CSV export is via a single “Save As…” action which uses the File System Access API when available (native Save dialog) and falls back to a standard download otherwise. Route: `/planning`.
-- **Solution Architecture (new, scaffolded)**: Workspace with four tabs and mock APIs to unblock UI implementation. Appears as its own rail labeled “Solution Arch”.
-  - Routes: `/sa/requirements`, `/sa/hld`, `/sa/arm`, `/sa/erd`
+- **Solution Architecture (new, scaffolded)**: Workspace appears as its own rail labeled “Solution Arch”.
+  - Routes: `/sa/estimating`, `/sa/requirements`, `/sa/hld`, `/sa/arm`, `/sa/erd`, plus surfaced under this rail: `/roadmap`, `/licensing`
+  - Tabs under SA rail: Estimating, Requirements, HLD, ARM Catalog, ERD, Roadmap, Licensing.
   - Serverless endpoints (mock): `/api/sa/generate-options`, `/api/sa/hld-draft`, `/api/sa/erd-draft` (see `netlify/functions/` and `netlify.toml`).
   - Types and contracts in `web/src/types/sa.ts`; client abstraction in `web/src/lib/ai/client.ts`.
+- **Roadmap (enhanced)**: Search/filter with icon quick filters, due‑soon notifications, and a modal details view. Uses caching and periodic refresh. Loads from `web/public/roadmap.example.json` by default; optionally uses the M365 Public Roadmap API via `/api/m365`.
+- **Settings (enhanced)**: Controls the roadmap notification window in months, persisted in `localStorage` key `mm.notifyWindowMonths`.
 
 ### Data files
 

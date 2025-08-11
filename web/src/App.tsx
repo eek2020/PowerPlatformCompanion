@@ -41,6 +41,7 @@ function App() {
         <Route path="/roadmap" element={<RoadmapPage />} />
         <Route path="/planning" element={<PlanningPage />} />
         <Route path="/icons" element={<IconsPage />} />
+        <Route path="/sa/estimating" element={<PlanningPage />} />
         <Route path="/sa/requirements" element={<SARequirementsPage />} />
         <Route path="/sa/hld" element={<SAHldPage />} />
         <Route path="/sa/arm" element={<SAArmCatalogPage />} />

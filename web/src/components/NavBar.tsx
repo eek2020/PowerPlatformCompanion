@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type React from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import './NavBar.css'
 
@@ -7,13 +8,6 @@ const IconHome = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true" className="rail__icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <path d="M3 11.5 12 4l9 7.5"/>
     <path d="M5.5 10v9a1 1 0 0 0 1 1H17.5a1 1 0 0 0 1-1v-9"/>
-  </svg>
-)
-const IconCalc = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true" className="rail__icon" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="4" y="3" width="16" height="18" rx="2"/>
-    <path d="M8 7h8"/>
-    <path d="M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 17.5h8"/>
   </svg>
 )
 const IconAlert = () => (
@@ -51,23 +45,34 @@ const IconBlocks = () => (
   </svg>
 )
 export default function NavBar() {
-  const [collapsed, setCollapsed] = useState(false)
+  // Start collapsed on load for a cleaner initial view
+  const [collapsed, setCollapsed] = useState(true)
   const location = useLocation()
   const navigate = useNavigate()
 
-  type RailKey = 'home' | 'estimating' | 'error' | 'tools' | 'sa' | 'resources' | 'settings'
+  type RailKey = 'home' | 'error' | 'devtools' | 'sa' | 'resources' | 'settings'
   const routeRail: RailKey = useMemo(() => {
     const p = location.pathname
-    if (p.startsWith('/planning') || p.startsWith('/licensing')) return 'estimating'
+    if (p.startsWith('/planning')) return 'sa'
+    if (p.startsWith('/licensing')) return 'sa'
     if (p.startsWith('/expression') || p.startsWith('/delegation') || p.startsWith('/diagnostics')) return 'error'
-    if (p.startsWith('/snippets') || p.startsWith('/formatter') || p.startsWith('/dataverse') || p.startsWith('/packs')) return 'tools'
+    if (p.startsWith('/snippets') || p.startsWith('/formatter') || p.startsWith('/dataverse') || p.startsWith('/packs')) return 'devtools'
+    if (p.startsWith('/icons')) return 'devtools'
     if (p.startsWith('/sa/')) return 'sa'
-    if (p.startsWith('/icons') || p.startsWith('/roadmap') || p.startsWith('/about')) return 'resources'
+    if (p.startsWith('/roadmap')) return 'sa'
+    if (p.startsWith('/about')) return 'resources'
     if (p.startsWith('/settings')) return 'settings'
     return 'home'
   }, [location.pathname])
 
   const [activeRail, setActiveRail] = useState<RailKey>('home')
+  // Hover state for flyout
+  const [hoveredRail, setHoveredRail] = useState<RailKey | null>(null)
+  const [flyoutTop, setFlyoutTop] = useState<number>(0)
+  const [flyoutArrowTop, setFlyoutArrowTop] = useState<number>(20)
+  const [flyoutTargetCenter, setFlyoutTargetCenter] = useState<number>(0)
+  const flyoutRef = useRef<HTMLDivElement | null>(null)
+  const [hoveredLabel, setHoveredLabel] = useState<string>('')
   useEffect(() => { setActiveRail(routeRail) }, [routeRail])
 
   useEffect(() => {
@@ -76,15 +81,65 @@ export default function NavBar() {
     else document.body.classList.remove(cls)
   }, [collapsed])
 
-  // Ensure clicking a rail title always opens its submenu.
+  // Clicking a rail navigates but does not auto-expand; preserves screen space.
   const openRail = (rail: RailKey, path: string) => {
     setActiveRail(rail)
-    if (collapsed) setCollapsed(false)
     if (path) navigate(path)
   }
 
+  // When hovering a rail, compute initial target center Y
+  const onRailHover = (rail: RailKey, e: React.MouseEvent<HTMLButtonElement>) => {
+    try {
+      const btnRect = e.currentTarget.getBoundingClientRect()
+      // Measure relative to the flyout's positioned container
+      const container = e.currentTarget.closest('.sidebar__container') as HTMLElement | null
+      const baseTop = container ? container.getBoundingClientRect().top : 0
+      const center = btnRect.top - baseTop + btnRect.height / 2
+      setFlyoutTargetCenter(center)
+      // Label for custom tooltip
+      const labelMap: Record<RailKey, string> = {
+        home: 'Home',
+        error: 'Error Help',
+        devtools: 'Developer Tools',
+        sa: 'Solution Architecture',
+        resources: 'Resources',
+        settings: 'Settings',
+      }
+      setHoveredLabel(labelMap[rail])
+    } catch {
+      setFlyoutTop(0)
+    }
+    setHoveredRail(rail)
+  }
+
+  // After flyout renders, center it to the hovered rail and position arrow
+  useEffect(() => {
+    const el = flyoutRef.current
+    if (!el || !hoveredRail) return
+    const padding = 6
+    const viewportH = window.innerHeight
+    const h = el.offsetHeight
+    // Try to align the flyout's title center to the hovered rail center
+    const titleEl = el.querySelector('.panel__title') as HTMLElement | null
+    const titleTop = titleEl ? titleEl.offsetTop : 0
+    const titleH = titleEl ? titleEl.offsetHeight : 0
+    // Compute top so that: (top + titleTop + titleH/2) == flyoutTargetCenter
+    let top = Math.round(flyoutTargetCenter - (titleTop + Math.max(0, titleH) / 2))
+    // Clamp within viewport with small padding
+    top = Math.max(padding, Math.min(viewportH - h - padding, top))
+    // Arrow position relative to flyout
+    const arrowTop = Math.round(flyoutTargetCenter - top)
+    setFlyoutTop(top)
+    setFlyoutArrowTop(Math.max(14, Math.min(h - 14, arrowTop)))
+  }, [hoveredRail, flyoutTargetCenter])
+
+  const clearHover = () => { setHoveredRail(null); setHoveredLabel('') }
+
   return (
-    <aside className={collapsed ? 'sidebar collapsed' : 'sidebar'} aria-label="Sidebar">
+    <aside
+      className={collapsed ? 'sidebar collapsed' : 'sidebar'}
+      aria-label="Sidebar"
+    >
       <div className="sidebar__top">
         <Link to="/" className="brand" aria-label="MakerMate Home">
           <span className="brand__logo">⚡️</span>
@@ -100,43 +155,40 @@ export default function NavBar() {
           {collapsed ? '›' : '‹'}
         </button>
       </div>
-      <div className="sidebar__container">
+      <div className="sidebar__container" onMouseLeave={clearHover}>
         <aside className="sidebar__rail" aria-label="Primary sections">
           <button
             className={activeRail==='home'? 'rail__btn active':'rail__btn'}
             onClick={() => openRail('home','/')}
+            onMouseEnter={(e) => onRailHover('home', e)}
             aria-label="Home"
           >
             <IconHome />
             <span className="rail__label">Home</span>
           </button>
-          <button
-            className={activeRail==='estimating'? 'rail__btn active':'rail__btn'}
-            onClick={() => openRail('estimating','/planning')}
-            aria-label="Estimating"
-          >
-            <IconCalc />
-            <span className="rail__label">Estimating</span>
-          </button>
+          {/* Estimating moved under Solution Architecture rail */}
           <button
             className={activeRail==='error'? 'rail__btn active':'rail__btn'}
             onClick={() => openRail('error','/expression')}
+            onMouseEnter={(e) => onRailHover('error', e)}
             aria-label="Error Help"
           >
             <IconAlert />
             <span className="rail__label">Error Help</span>
           </button>
           <button
-            className={activeRail==='tools'? 'rail__btn active':'rail__btn'}
-            onClick={() => openRail('tools','/snippets')}
-            aria-label="Tools"
+            className={activeRail==='devtools'? 'rail__btn active':'rail__btn'}
+            onClick={() => openRail('devtools','/snippets')}
+            onMouseEnter={(e) => onRailHover('devtools', e)}
+            aria-label="Developer Tools"
           >
             <IconWrench />
-            <span className="rail__label">Tools</span>
+            <span className="rail__label">Developer Tools</span>
           </button>
           <button
             className={activeRail==='sa'? 'rail__btn active':'rail__btn'}
             onClick={() => openRail('sa','/sa/requirements')}
+            onMouseEnter={(e) => onRailHover('sa', e)}
             aria-label="Solution Architecture"
           >
             <IconBlocks />
@@ -145,6 +197,7 @@ export default function NavBar() {
           <button
             className={activeRail==='resources'? 'rail__btn active':'rail__btn'}
             onClick={() => openRail('resources','/icons')}
+            onMouseEnter={(e) => onRailHover('resources', e)}
             aria-label="Resources"
           >
             <IconGlobe />
@@ -153,6 +206,7 @@ export default function NavBar() {
           <button
             className={activeRail==='settings'? 'rail__btn active':'rail__btn'}
             onClick={() => openRail('settings','/settings')}
+            onMouseEnter={(e) => onRailHover('settings', e)}
             aria-label="Settings"
           >
             <IconGear />
@@ -168,13 +222,7 @@ export default function NavBar() {
                 <li><NavLink to="/about" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>About</NavLink></li>
               </ul>
             )}
-            {activeRail === 'estimating' && (
-              <ul className="panel__list">
-                <li className="panel__title">Estimating</li>
-                <li><NavLink to="/planning" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Planning</NavLink></li>
-                <li><NavLink to="/licensing" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Licensing</NavLink></li>
-              </ul>
-            )}
+            {/* Estimating panel removed; links relocated under SA and Resources */}
             {activeRail === 'error' && (
               <ul className="panel__list">
                 <li className="panel__title">Error Help</li>
@@ -183,29 +231,32 @@ export default function NavBar() {
                 <li><NavLink to="/diagnostics" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Diagnostics</NavLink></li>
               </ul>
             )}
-            {activeRail === 'tools' && (
+            {activeRail === 'devtools' && (
               <ul className="panel__list">
-                <li className="panel__title">Tools</li>
+                <li className="panel__title">Developer Tools</li>
                 <li><NavLink to="/snippets" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Snippets</NavLink></li>
                 <li><NavLink to="/formatter" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Flow Formatter</NavLink></li>
                 <li><NavLink to="/dataverse" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Dataverse Lookup</NavLink></li>
                 <li><NavLink to="/packs" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Packs</NavLink></li>
+                <li><NavLink to="/icons" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Icons</NavLink></li>
               </ul>
             )}
             {activeRail === 'sa' && (
               <ul className="panel__list">
                 <li className="panel__title">Solution Architecture</li>
+                <li><NavLink to="/sa/estimating" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Estimating</NavLink></li>
                 <li><NavLink to="/sa/requirements" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Requirements</NavLink></li>
                 <li><NavLink to="/sa/hld" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>HLD</NavLink></li>
                 <li><NavLink to="/sa/arm" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>ARM Catalog</NavLink></li>
                 <li><NavLink to="/sa/erd" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>ERD</NavLink></li>
+                <li><NavLink to="/roadmap" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Roadmap</NavLink></li>
+                <li><NavLink to="/licensing" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Licensing</NavLink></li>
               </ul>
             )}
             {activeRail === 'resources' && (
               <ul className="panel__list">
                 <li className="panel__title">Resources</li>
-                <li><NavLink to="/icons" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Icons</NavLink></li>
-                <li><NavLink to="/roadmap" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Roadmap</NavLink></li>
+                <li><NavLink to="/about" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>About</NavLink></li>
               </ul>
             )}
             {activeRail === 'settings' && (
@@ -215,6 +266,74 @@ export default function NavBar() {
               </ul>
             )}
           </nav>
+        )}
+        {collapsed && hoveredRail && (
+          <nav
+            className="sidebar__flyout"
+            role="navigation"
+            aria-label="Primary flyout"
+            ref={flyoutRef}
+            style={{ top: flyoutTop, ['--flyout-arrow-top' as any]: `${flyoutArrowTop}px` }}
+            onMouseLeave={clearHover}
+          >
+            {hoveredRail === 'home' && (
+              <ul className="panel__list">
+                <li className="panel__title">Home</li>
+                <li><NavLink to="/" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Dashboard</NavLink></li>
+                <li><NavLink to="/about" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>About</NavLink></li>
+              </ul>
+            )}
+            {hoveredRail === 'error' && (
+              <ul className="panel__list">
+                <li className="panel__title">Error Help</li>
+                <li><NavLink to="/expression" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Expression Tester</NavLink></li>
+                <li><NavLink to="/delegation" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Delegation Check</NavLink></li>
+                <li><NavLink to="/diagnostics" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Diagnostics</NavLink></li>
+              </ul>
+            )}
+            {hoveredRail === 'devtools' && (
+              <ul className="panel__list">
+                <li className="panel__title">Developer Tools</li>
+                <li><NavLink to="/snippets" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Snippets</NavLink></li>
+                <li><NavLink to="/formatter" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Flow Formatter</NavLink></li>
+                <li><NavLink to="/dataverse" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Dataverse Lookup</NavLink></li>
+                <li><NavLink to="/packs" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Packs</NavLink></li>
+                <li><NavLink to="/icons" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Icons</NavLink></li>
+              </ul>
+            )}
+            {hoveredRail === 'sa' && (
+              <ul className="panel__list">
+                <li className="panel__title">Solution Architecture</li>
+                <li><NavLink to="/sa/estimating" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Estimating</NavLink></li>
+                <li><NavLink to="/sa/requirements" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Requirements</NavLink></li>
+                <li><NavLink to="/sa/hld" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>HLD</NavLink></li>
+                <li><NavLink to="/sa/arm" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>ARM Catalog</NavLink></li>
+                <li><NavLink to="/sa/erd" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>ERD</NavLink></li>
+                <li><NavLink to="/roadmap" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Roadmap</NavLink></li>
+                <li><NavLink to="/licensing" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Licensing</NavLink></li>
+              </ul>
+            )}
+            {hoveredRail === 'resources' && (
+              <ul className="panel__list">
+                <li className="panel__title">Resources</li>
+                <li><NavLink to="/icons" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Icons</NavLink></li>
+                <li><NavLink to="/roadmap" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Roadmap</NavLink></li>
+                <li><NavLink to="/licensing" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Licensing</NavLink></li>
+              </ul>
+            )}
+            {hoveredRail === 'settings' && (
+              <ul className="panel__list">
+                <li className="panel__title">Settings</li>
+                <li><NavLink to="/settings" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>General</NavLink></li>
+              </ul>
+            )}
+          </nav>
+        )}
+        {collapsed && hoveredRail && (
+          <div
+            className="sidebar__tooltip"
+            style={{ top: flyoutTargetCenter }}
+          >{hoveredLabel}</div>
         )}
       </div>
       <div className="sidebar__footer">

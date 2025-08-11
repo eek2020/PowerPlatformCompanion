@@ -1,0 +1,12 @@
+# Ignore dependencies and VCS
+node_modules/
+**/node_modules/
+.git/
+
+# Build artifacts (if any)
+dist/
+build/
+.out/
+
+# Netlify build cache (if present)
+.netlify/
