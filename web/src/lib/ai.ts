@@ -8,7 +8,13 @@ export type ProcessId =
   | 'dataverse'
   | 'packs'
   | 'icons'
-  | 'planning'
+  | 'estimating'
+  | 'requirements'
+  | 'hld'
+  | 'arm'
+  | 'erd'
+  | 'roadmap'
+  | 'licensing'
 
 export type Binding = {
   provider: ProviderId
@@ -87,5 +93,11 @@ export const ALL_PROCESSES: { id: ProcessId; label: string }[] = [
   { id: 'dataverse', label: 'Dataverse Lookup' },
   { id: 'packs', label: 'Packs' },
   { id: 'icons', label: 'Icons' },
-  { id: 'planning', label: 'Planning' },
+  { id: 'estimating', label: 'Estimating' },
+  { id: 'requirements', label: 'Requirements' },
+  { id: 'hld', label: 'HLD' },
+  { id: 'arm', label: 'ARM Catalog' },
+  { id: 'erd', label: 'ERD' },
+  { id: 'roadmap', label: 'Roadmap' },
+  { id: 'licensing', label: 'Licensing' },
 ]

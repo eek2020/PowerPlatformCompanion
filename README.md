@@ -18,6 +18,8 @@ AI integration docs updates:
 
 - **AI Settings**: The app has dedicated pages for AI configuration under Settings:
   - Providers (`/settings/ai/providers`) — enhanced management of API keys (OpenAI/Anthropic and custom providers), collapsible provider sections, add/remove providers, manage provider‑scoped models, and manage AI process bindings directly within this page. Keys are stored locally for development.
+  - Providers (`/settings/ai/providers`) — enhanced management of API keys (OpenAI/Anthropic and custom providers), collapsible provider sections, add/remove providers, manage provider‑scoped models, and manage AI process bindings directly within this page. Binding cards are now collapsible per process. Keys are stored locally for development.
+    - Processes covered for bindings (see `web/src/lib/ai.ts` `ALL_PROCESSES`): Snippets, Delegation, Expression Tester, Diagnostics, Flow Formatter, Dataverse Lookup, Packs, Icons, Estimating, Requirements, HLD, ARM Catalog, ERD, Roadmap, Licensing.
   - Models (`/settings/ai/models`) — select active provider/model, fetch or seed model lists, edit per‑model system prompts.
   - Helper module: `web/src/lib/ai.ts` centralizes provider/model/prompt storage, per‑process bindings, and `resolveConfig(process)`.
 

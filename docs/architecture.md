@@ -54,7 +54,7 @@ Snippets page cards (`web/src/pages/SnippetsPage.tsx`) are constrained with `max
 
 ### AI settings pages
 
-- `web/src/pages/AIProvidersPage.tsx`: Consolidated management of AI providers. Features: collapsible provider sections; add/edit API keys (OpenAI/Anthropic and custom providers); add/remove providers; manage provider‑scoped models; and manage AI Process Bindings directly within this page. For development, keys are stored locally; use a serverless proxy in production.
+- `web/src/pages/AIProvidersPage.tsx`: Consolidated management of AI providers. Features: collapsible provider sections; add/edit API keys (OpenAI/Anthropic and custom providers); add/remove providers; manage provider‑scoped models; and manage AI Process Bindings directly within this page. Binding cards are collapsible per process. For development, keys are stored locally; use a serverless proxy in production.
 - `web/src/pages/AIModelsPage.tsx`: Choose active provider/model, fetch or seed model lists, and edit per‑model system prompts.
 
 ## Error handling

@@ -67,6 +67,8 @@ export default function AIProvidersPage() {
   const [newModel, setNewModel] = useState('')
   const [selectedProviderId, setSelectedProviderId] = useState('')
   const [bindingsVersion, setBindingsVersion] = useState(0)
+  const [openBindings, setOpenBindings] = useState<Record<ProcessId, boolean>>({} as Record<ProcessId, boolean>)
+  const toggleBinding = (id: ProcessId) => setOpenBindings(prev => ({ ...prev, [id]: !prev[id] }))
   
   // Trigger re-render when bindings change
   useMemo(() => getBindings(), [bindingsVersion])
@@ -340,10 +342,39 @@ export default function AIProvidersPage() {
         <h2>AI Process Bindings</h2>
         <p>Choose which provider/model and prompt each app process should use. If no custom binding is set, the process will use the global active provider/model and its system prompt.</p>
 
-        <div style={{ display: 'grid', gap: '1rem', maxWidth: 900 }}>
-          {ALL_PROCESSES.map(({ id, label }) => (
-            <ProcessBindingCard key={id} proc={id} label={label} onChange={() => setBindingsVersion(v => v + 1)} />
-          ))}
+        <div style={{ display: 'grid', gap: '0.75rem', maxWidth: 900 }}>
+          {ALL_PROCESSES.map(({ id, label }) => {
+            const b = getBindings()[id]
+            const open = !!openBindings[id]
+            return (
+              <div key={id} style={{ border: '1px solid var(--muted, #e5e7eb)', borderRadius: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => toggleBinding(id)}
+                  style={{
+                    width: '100%', textAlign: 'left', padding: 12, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    background: 'transparent', border: 'none', borderBottom: open ? '1px solid var(--muted, #e5e7eb)' : 'none'
+                  }}
+                  aria-expanded={open}
+                  aria-controls={`pb-${id}`}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span>{open ? '▼' : '▶'}</span>
+                    <strong>{label}</strong>
+                  </span>
+                  <span style={{ fontSize: '0.8rem', color: b ? 'var(--success, #16a34a)' : 'var(--muted-foreground, #6b7280)' }}>
+                    {b ? 'Custom' : 'Using global'}
+                  </span>
+                </button>
+                {open && (
+                  <div id={`pb-${id}`} style={{ padding: 12 }}>
+                    <ProcessBindingCard proc={id} label={label} onChange={() => setBindingsVersion(v => v + 1)} />
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       </section>
 

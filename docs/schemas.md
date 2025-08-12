@@ -65,7 +65,7 @@ A lightweight validator exists in `web/src/utils/validators.ts`.
 Types live in `web/src/lib/ai.ts`:
 
 - `type ProviderId = 'openai' | 'anthropic'`
-- `type ProcessId = 'snippets' | 'delegation' | 'expression' | 'diagnostics' | 'formatter' | 'dataverse' | 'packs' | 'icons' | 'planning'`
+- `type ProcessId = 'snippets' | 'delegation' | 'expression' | 'diagnostics' | 'formatter' | 'dataverse' | 'packs' | 'icons' | 'estimating' | 'requirements' | 'hld' | 'arm' | 'erd' | 'roadmap' | 'licensing'`
 - `type Binding = { provider: ProviderId; model: string; promptOverride?: string }`
 
 ### Solution Architecture workspace keys
