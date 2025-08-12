@@ -32,6 +32,12 @@ export default function LandingPage() {
           <Feature title="Resources" emoji="🌐" to="/resources">
             Hand‑picked links, docs, and community articles.
           </Feature>
+          <Feature title="AI Models" emoji="🤖" to="/settings/ai/models">
+            Manage providers and pick models without leaving the app.
+          </Feature>
+          <Feature title="AI Cost Calculator" emoji="💸" to="/settings/ai/costs">
+            Estimate token usage and monthly spend across providers.
+          </Feature>
         </div>
       </div>
     </section>
