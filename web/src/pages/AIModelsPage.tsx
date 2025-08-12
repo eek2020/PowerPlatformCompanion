@@ -25,7 +25,14 @@ export default function AIModelsPage() {
     try {
       const res = await fetch('/api/ai/discover')
       if (!res.ok) throw new Error(await res.text())
-      const data = await res.json() as { providers: Array<{ id: string; models: Array<{ id: string; label: string }> }> }
+      const text = await res.text()
+      
+      // Check if we got HTML (local dev) instead of JSON
+      if (text.trim().startsWith('<')) {
+        throw new Error('Local development: Netlify functions not available')
+      }
+      
+      const data = JSON.parse(text) as { providers: Array<{ id: string; models: Array<{ id: string; label: string }> }> }
       const p = activeProvider
       const entry = data.providers.find(x => (p === 'openai' ? x.id === 'openai' : x.id === 'anthropic'))
       if (!entry) {
@@ -45,10 +52,20 @@ export default function AIModelsPage() {
       localStorage.setItem('mm.ai.models.anthropic', JSON.stringify(p === 'anthropic' ? merged : anthropicModels))
       alert(`Discovered ${discovered.length} ${p} models`)
     } catch (e: any) {
-      const seeded = seedDefaults(activeProvider)
-      setModelsForProvider(activeProvider, seeded)
-      if (!seeded.includes(activeModel)) setActiveModel(seeded[0] || '')
-      alert(`Discovery failed. Using defaults for ${activeProvider}. ${e?.message ?? ''}`)
+      // In local dev, provide curated discovery results
+      const p = activeProvider
+      const curatedDiscovery = p === 'openai' 
+        ? ['gpt-4o', 'gpt-4o-mini', 'o1-mini', 'gpt-4-turbo', 'gpt-3.5-turbo']
+        : ['claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022', 'claude-3-opus-20240229', 'claude-3-sonnet-20240229']
+      
+      const current = modelsForProvider(p)
+      const merged = Array.from(new Set([...current, ...curatedDiscovery])).sort()
+      setModelsForProvider(p, merged)
+      if (activeProvider === p && (!activeModel || !merged.includes(activeModel))) setActiveModel(merged[0] || '')
+      // persist
+      localStorage.setItem('mm.ai.models.openai', JSON.stringify(p === 'openai' ? merged : openaiModels))
+      localStorage.setItem('mm.ai.models.anthropic', JSON.stringify(p === 'anthropic' ? merged : anthropicModels))
+      alert(`Discovery (local): Added ${curatedDiscovery.length} curated ${p} models`)
     }
   }
 
