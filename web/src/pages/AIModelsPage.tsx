@@ -21,6 +21,37 @@ export default function AIModelsPage() {
     ? ['gpt-4o', 'gpt-4o-mini', 'o4-mini', 'gpt-4.1-mini']
     : ['claude-3-5-sonnet-20240620', 'claude-3-5-haiku-20241022', 'claude-3-opus-20240229']
 
+  const discoverModels = async () => {
+    try {
+      const res = await fetch('/api/ai/discover')
+      if (!res.ok) throw new Error(await res.text())
+      const data = await res.json() as { providers: Array<{ id: string; models: Array<{ id: string; label: string }> }> }
+      const p = activeProvider
+      const entry = data.providers.find(x => (p === 'openai' ? x.id === 'openai' : x.id === 'anthropic'))
+      if (!entry) {
+        alert('No discovery results for the selected provider. Using defaults.')
+        const seeded = seedDefaults(p)
+        setModelsForProvider(p, seeded)
+        if (activeProvider === p && !seeded.includes(activeModel)) setActiveModel(seeded[0] || '')
+        return
+      }
+      const discovered = entry.models.map(m => m.id)
+      const current = modelsForProvider(p)
+      const merged = Array.from(new Set([...current, ...discovered])).sort()
+      setModelsForProvider(p, merged)
+      if (activeProvider === p && (!activeModel || !merged.includes(activeModel))) setActiveModel(merged[0] || '')
+      // persist
+      localStorage.setItem('mm.ai.models.openai', JSON.stringify(p === 'openai' ? merged : openaiModels))
+      localStorage.setItem('mm.ai.models.anthropic', JSON.stringify(p === 'anthropic' ? merged : anthropicModels))
+      alert(`Discovered ${discovered.length} ${p} models`)
+    } catch (e: any) {
+      const seeded = seedDefaults(activeProvider)
+      setModelsForProvider(activeProvider, seeded)
+      if (!seeded.includes(activeModel)) setActiveModel(seeded[0] || '')
+      alert(`Discovery failed. Using defaults for ${activeProvider}. ${e?.message ?? ''}`)
+    }
+  }
+
   const fetchModels = async (p: ProviderId) => {
     try {
       if (p === 'openai') {
@@ -78,6 +109,7 @@ export default function AIModelsPage() {
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button onClick={() => fetchModels(activeProvider)}>Fetch models</button>
+            <button onClick={discoverModels}>Discover (no key)</button>
             <button onClick={() => { const seeded = seedDefaults(activeProvider); setModelsForProvider(activeProvider, seeded); if (!seeded.includes(activeModel)) setActiveModel(seeded[0] || '') }}>Use defaults</button>
           </div>
         </div>

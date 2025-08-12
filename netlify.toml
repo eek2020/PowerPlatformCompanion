@@ -52,6 +52,12 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/api/ai/discover"
+  to = "/.netlify/functions/ai-discover-models"
+  status = 200
+  force = true
+
 # SPA fallback
 [[redirects]]
   from = "/*"
