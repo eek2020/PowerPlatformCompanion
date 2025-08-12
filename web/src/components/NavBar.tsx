@@ -265,6 +265,7 @@ export default function NavBar() {
                <li><NavLink to="/settings" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>General</NavLink></li>
                <li><NavLink to="/settings/ai/providers" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>AI Providers</NavLink></li>
                <li><NavLink to="/settings/ai/models" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>AI Models</NavLink></li>
+               <li><NavLink to="/settings/ai/costs" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Cost Calculator</NavLink></li>
                 {/* AI Bindings removed; consolidated into AI Providers page */}
              </ul>
            )}
@@ -330,6 +331,7 @@ export default function NavBar() {
                <li><NavLink to="/settings" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>General</NavLink></li>
                <li><NavLink to="/settings/ai/providers" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>AI Providers</NavLink></li>
                <li><NavLink to="/settings/ai/models" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>AI Models</NavLink></li>
+               <li><NavLink to="/settings/ai/costs" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>Cost Calculator</NavLink></li>
                 {/* AI Bindings removed; consolidated into AI Providers page */}
              </ul>
            )}
