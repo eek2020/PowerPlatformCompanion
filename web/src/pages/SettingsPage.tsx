@@ -104,9 +104,24 @@ export default function SettingsPage() {
           <small className="help">Used by Planning to compute an estimated time per row and total.</small>
         </div>
 
-        {/* AI settings moved to dedicated AI Providers page */}
-
-        {/* AI settings moved to dedicated pages: AI Providers and AI Models */}
+        {/* AI Settings */}
+        <div>
+          <h2 style={{ fontSize: '1.1rem' }}>AI Settings</h2>
+          <p style={{ margin: '0.5rem 0', fontSize: '0.9rem', color: '#888' }}>
+            Configure AI providers, models, and cost management.
+          </p>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <a href="/settings/ai/providers" style={{ textDecoration: 'none' }}>
+              <button>AI Providers</button>
+            </a>
+            <a href="/settings/ai/models" style={{ textDecoration: 'none' }}>
+              <button>AI Models</button>
+            </a>
+            <a href="/settings/ai/costs" style={{ textDecoration: 'none' }}>
+              <button>Cost Calculator</button>
+            </a>
+          </div>
+        </div>
 
         <div>
           <h2 style={{ fontSize: '1.1rem' }}>Coming Soon</h2>

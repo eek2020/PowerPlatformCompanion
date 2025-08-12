@@ -11,6 +11,7 @@ import DataversePage from './pages/DataversePage'
 import SettingsPage from './pages/SettingsPage'
 import AIProvidersPage from './pages/AIProvidersPage'
 import AIModelsPage from './pages/AIModelsPage'
+import AICostCalculatorPage from './pages/AICostCalculatorPage'
 
 import AboutPage from './pages/AboutPage'
 import ResourcesPage from './pages/ResourcesPage'
@@ -52,6 +53,7 @@ function App() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/ai/providers" element={<AIProvidersPage />} />
         <Route path="/settings/ai/models" element={<AIModelsPage />} />
+        <Route path="/settings/ai/costs" element={<AICostCalculatorPage />} />
 
         <Route path="/about" element={<AboutPage />} />
         <Route path="*" element={<div className="container"><h1>Not Found</h1></div>} />
