@@ -23,14 +23,23 @@ A companion for Solution Architects to plan, design, and validate Microsoft solu
   - Azure ARM catalog (one-click deploy) + uploads.
   - ERD designer with CSV round-trip and exports; optional AI assist.
 
-- Phase 3 — Productization & Hardening (Planned)
+- Phase 3 — Ideas Capture & Multi-User Foundation (Planned)
+  - Ideas capture system for brainstorming and organizing thoughts.
+  - Authentication research and implementation:
+    - Multi-provider auth (Microsoft, GitHub, Google, etc.)
+    - Security architecture for multi-user scenarios
+    - Data isolation and ownership models
+    - Development/testing workflow for auth scenarios
+  - User management and data persistence strategy.
+
+- Phase 4 — Productization & Hardening (Planned)
   - Security review, input validation, rate limiting, logging hygiene.
   - Error handling UX, observability, tests (unit/contract/E2E).
   - Documentation (user guide + developer docs) and release process.
 
-- Phase 4 — Optional Desktop & Cloud (Planned)
+- Phase 5 — Optional Desktop & Cloud (Planned)
   - Desktop packaging (Tauri preferred) for offline and secure key storage.
-  - Optional auth (Microsoft/GitHub) and cloud persistence (e.g., Supabase) with RLS.
+  - Cloud persistence (e.g., Supabase) with RLS and auth integration.
 
 ## Release Strategy
 - Local-first by default. Serverless for AI and utility endpoints.
