@@ -13,6 +13,13 @@ A companion to help with all things Power Platform
 - **Security**: see `docs/security.md` for current boundaries and future hardening.
 - **Schemas**: see `docs/schemas.md` for JSON shapes and localStorage keys.
 - **Solution Architecture (spec)**: see `docs/solution-architecture.md` for the workspace overview, acceptance criteria, data contracts, and flows.
+  
+AI integration docs updates:
+
+- **AI Settings**: The app has dedicated pages for AI configuration under Settings:
+  - Providers (`/settings/ai/providers`) — enhanced management of API keys (OpenAI/Anthropic and custom providers), collapsible provider sections, add/remove providers, manage provider‑scoped models, and manage AI process bindings directly within this page. Keys are stored locally for development.
+  - Models (`/settings/ai/models`) — select active provider/model, fetch or seed model lists, edit per‑model system prompts.
+  - Helper module: `web/src/lib/ai.ts` centralizes provider/model/prompt storage, per‑process bindings, and `resolveConfig(process)`.
 
 ## Repo Structure (high‑level)
 
@@ -34,7 +41,7 @@ These are available in the React app under `web/` and surfaced via the left side
 Sidebar notes:
 
 - Collapsed width is controlled by CSS var `--sidebar-w-collapsed` (80px) in `web/src/index.css` and used to offset `#root`.
-- Clicking a main rail navigates without auto-expanding when collapsed; expansion is manual.
+- Clicking a main rail auto-expands the sidebar and opens the corresponding submenu.
 - Hover flyout appears only when collapsed; expanded state shows the inline panel (no flyout).
 
 - **Developer Tools**:
@@ -54,6 +61,12 @@ Sidebar notes:
   - Types and contracts in `web/src/types/sa.ts`; client abstraction in `web/src/lib/ai/client.ts`.
 - **Roadmap (enhanced)**: Search/filter with icon quick filters, due‑soon notifications, and a modal details view. Uses caching and periodic refresh. Loads from `web/public/roadmap.example.json` by default; optionally uses the M365 Public Roadmap API via `/api/m365`.
 - **Settings (enhanced)**: Controls the roadmap notification window in months, persisted in `localStorage` key `mm.notifyWindowMonths`.
+  - **AI Providers** (`/settings/ai/providers`): manage API keys for OpenAI/Anthropic and custom providers, provider models, and AI process bindings in one consolidated page.
+  - **AI Models** (`/settings/ai/models`): choose active provider/model, manage model lists, and edit per‑model system prompts. Components that run AI should call `resolveConfig('<process>')` from `web/src/lib/ai.ts`.
+
+### Development server
+
+- Run the app with Vite. Default dev URL: `http://localhost:5173/`.
 
 ### Data files
 

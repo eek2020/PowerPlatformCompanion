@@ -70,3 +70,49 @@ export interface ErdDraftResponse {
 export async function erdDraft(req: ErdDraftRequest): Promise<ErdDraftResponse> {
   return transport.post<ErdDraftRequest, ErdDraftResponse>('/api/sa/erd-draft', req)
 }
+
+// Triple options (PP only, Hybrid, Azure only)
+export interface TripleOption {
+  architectureSummary: string
+  components: string[]
+  services: string[]
+  tradeoffs: string
+  implementationNotes: string
+  security: string
+  costConsiderations: string
+  complexity: 'low' | 'medium' | 'high'
+  scale: 'small' | 'medium' | 'large'
+}
+
+export interface GenerateTripleOptionsItem {
+  requirementId: string
+  responses: {
+    powerPlatformOnly: TripleOption
+    hybrid: TripleOption
+    azureOnly: TripleOption
+  }
+}
+
+export interface GenerateTripleOptionsRequest {
+  requirements: Array<{ id: string; title: string; description: string }>
+  provider?: AIProvider
+  model?: string
+  systemPrompt?: string
+}
+
+export async function generateTripleOptions(req: GenerateTripleOptionsRequest): Promise<GenerateTripleOptionsItem[]> {
+  return transport.post<GenerateTripleOptionsRequest, GenerateTripleOptionsItem[]>('/api/sa/generate-triple-options', req)
+}
+
+// Models listing
+export interface ListModelsRequest {
+  provider: AIProvider
+  apiKey?: string
+}
+export interface ListModelsResponse {
+  models: Array<{ id: string; label: string; deprecated?: boolean }>
+}
+
+export async function listModels(req: ListModelsRequest): Promise<ListModelsResponse> {
+  return transport.post<ListModelsRequest, ListModelsResponse>('/api/ai/list-models', req)
+}

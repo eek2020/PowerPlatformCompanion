@@ -17,6 +17,8 @@ The SPA uses `react-router-dom` with a left sidebar for primary navigation. Rout
 - `/dataverse` → `DataversePage`
 - `/licensing` → `LicensingPage` (shown under Solution Architecture rail)
 - `/settings` → `SettingsPage`
+- `/settings/ai/providers` → `AIProvidersPage` (Settings → AI → Providers)
+- `/settings/ai/models` → `AIModelsPage` (Settings → AI → Models)
 - `/about` → `AboutPage`
 - `/sa/requirements` → `SARequirementsPage`
 - `/sa/hld` → `SAHldPage`
@@ -35,9 +37,10 @@ The sidebar component `web/src/components/NavBar.tsx`:
 - Labels hidden when collapsed; tooltips and a hover flyout assist discovery.
 - Layout offset handled by `#root { padding-left: … }` in `web/src/index.css`.
 - Collapsed width is controlled by CSS var `--sidebar-w-collapsed` (80px) in `web/src/index.css`.
-- Clicking a main rail navigates without auto-expanding when collapsed. Expansion is manual.
+- Clicking a main rail auto-expands the sidebar and opens the corresponding submenu.
 - Hover flyout appears only when the sidebar is collapsed. In expanded state the inline panel is used (no flyout).
 - Rails:
   - Developer Tools: Snippets, Flow Formatter, Dataverse Lookup, Packs, Icons.
   - Solution Arch: Estimating, Requirements, HLD, ARM Catalog, ERD, Roadmap, Licensing.
   - Resources: About.
+  - Settings: General, AI Providers, AI Models.

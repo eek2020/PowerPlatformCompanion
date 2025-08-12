@@ -2,6 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { snippetsMock, type Snippet } from '../data/snippetsMock'
 import { isSnippetArray } from '../utils/validators'
 
+// Icon helpers with configurable stroke colour for contrast
+const svgAutomate = (stroke: string) =>
+  `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 7l6 5-6 5V7z"/><path d="M10 7h6l-6 5 6 5h-6l-6-5 6-5z" fill="none" /></svg>`
+
+const svgApps = (stroke: string) =>
+  `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><polygon points="12 3 21 12 12 21 3 12 12 3" fill="none"/><polygon points="12 6.5 17.5 12 12 17.5 6.5 12 12 6.5" /></svg>`
+
 export default function SnippetsPage() {
   const [query, setQuery] = useState('')
   const [snippets, setSnippets] = useState<Snippet[] | null>(null)
@@ -75,13 +82,13 @@ export default function SnippetsPage() {
       <label htmlFor="snip-search">Search</label>
       <input id="snip-search" type="search" placeholder="Filter by title, tag, or code…" value={query} onChange={e => setQuery(e.target.value)} />
       <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', margin: '0.5rem 0 1rem' }}>
-        <button aria-pressed={platform==='all'} onClick={() => setPlatform('all')} style={{ display: 'flex', alignItems: 'center', gap: 6, border: platform==='all' ? '2px solid #5aa0ff' : '1px solid #2b3a66', borderRadius: 8, padding: '4px 8px', background: 'transparent' }}>All</button>
-        <button aria-label="Filter: Power Automate" aria-pressed={platform==='automate'} onClick={() => setPlatform('automate')} style={{ display: 'flex', alignItems: 'center', gap: 6, border: platform==='automate' ? '2px solid #5aa0ff' : '1px solid #2b3a66', borderRadius: 8, padding: '4px 8px', background: 'transparent' }}>
-          <span dangerouslySetInnerHTML={{ __html: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e9efff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 7l6 5-6 5V7z"/><path d="M10 7h6l-6 5 6 5h-6l-6-5 6-5z" fill="none" /></svg>' }} />
+        <button aria-pressed={platform==='all'} onClick={() => setPlatform('all')} style={{ display: 'flex', alignItems: 'center', gap: 6, border: platform==='all' ? '2px solid #5aa0ff' : '1px solid #2b3a66', borderRadius: 8, padding: '4px 8px', background: 'transparent', color: platform==='all' ? '#0ea5e9' : '#334155' }}>All</button>
+        <button aria-label="Filter: Power Automate" aria-pressed={platform==='automate'} onClick={() => setPlatform('automate')} style={{ display: 'flex', alignItems: 'center', gap: 6, border: platform==='automate' ? '2px solid #5aa0ff' : '1px solid #2b3a66', borderRadius: 8, padding: '4px 8px', background: 'transparent', color: platform==='automate' ? '#0ea5e9' : '#334155' }}>
+          <span dangerouslySetInnerHTML={{ __html: svgAutomate(platform==='automate' ? '#0ea5e9' : '#334155') }} />
           <small className="help">Power Automate</small>
         </button>
-        <button aria-label="Filter: Power Apps" aria-pressed={platform==='apps'} onClick={() => setPlatform('apps')} style={{ display: 'flex', alignItems: 'center', gap: 6, border: platform==='apps' ? '2px solid #5aa0ff' : '1px solid #2b3a66', borderRadius: 8, padding: '4px 8px', background: 'transparent' }}>
-          <span dangerouslySetInnerHTML={{ __html: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e9efff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><polygon points="12 3 21 12 12 21 3 12 12 3" fill="none"/><polygon points="12 6.5 17.5 12 12 17.5 6.5 12 12 6.5" /></svg>' }} />
+        <button aria-label="Filter: Power Apps" aria-pressed={platform==='apps'} onClick={() => setPlatform('apps')} style={{ display: 'flex', alignItems: 'center', gap: 6, border: platform==='apps' ? '2px solid #5aa0ff' : '1px solid #2b3a66', borderRadius: 8, padding: '4px 8px', background: 'transparent', color: platform==='apps' ? '#0ea5e9' : '#334155' }}>
+          <span dangerouslySetInnerHTML={{ __html: svgApps(platform==='apps' ? '#0ea5e9' : '#334155') }} />
           <small className="help">Power Apps</small>
         </button>
       </div>
@@ -98,10 +105,10 @@ export default function SnippetsPage() {
                     return (
                       <>
                         {p === 'automate' && (
-                          <span title="Power Automate" dangerouslySetInnerHTML={{ __html: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e9efff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 7l6 5-6 5V7z"/><path d="M10 7h6l-6 5 6 5h-6l-6-5 6-5z" fill="none" /></svg>' }} />
+                          <span title="Power Automate" dangerouslySetInnerHTML={{ __html: svgAutomate('#475569') }} />
                         )}
                         {p === 'apps' && (
-                          <span title="Power Apps" dangerouslySetInnerHTML={{ __html: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e9efff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><polygon points="12 3 21 12 12 21 3 12 12 3" fill="none"/><polygon points="12 6.5 17.5 12 12 17.5 6.5 12 12 6.5" /></svg>' }} />
+                          <span title="Power Apps" dangerouslySetInnerHTML={{ __html: svgApps('#475569') }} />
                         )}
                         {p === 'unknown' && <small className="help">Platform: Unknown</small>}
                       </>

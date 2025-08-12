@@ -260,12 +260,15 @@ export default function NavBar() {
               </ul>
             )}
             {activeRail === 'settings' && (
-              <ul className="panel__list">
-                <li className="panel__title">Settings</li>
-                <li><NavLink to="/settings" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>General</NavLink></li>
-              </ul>
-            )}
-          </nav>
+             <ul className="panel__list">
+               <li className="panel__title">Settings</li>
+               <li><NavLink to="/settings" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>General</NavLink></li>
+               <li><NavLink to="/settings/ai/providers" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>AI Providers</NavLink></li>
+               <li><NavLink to="/settings/ai/models" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>AI Models</NavLink></li>
+                {/* AI Bindings removed; consolidated into AI Providers page */}
+             </ul>
+           )}
+         </nav>
         )}
         {collapsed && hoveredRail && (
           <nav
@@ -322,12 +325,15 @@ export default function NavBar() {
               </ul>
             )}
             {hoveredRail === 'settings' && (
-              <ul className="panel__list">
-                <li className="panel__title">Settings</li>
-                <li><NavLink to="/settings" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>General</NavLink></li>
-              </ul>
-            )}
-          </nav>
+             <ul className="panel__list">
+               <li className="panel__title">Settings</li>
+               <li><NavLink to="/settings" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>General</NavLink></li>
+               <li><NavLink to="/settings/ai/providers" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>AI Providers</NavLink></li>
+               <li><NavLink to="/settings/ai/models" className={({isActive}) => isActive? 'panel__item active':'panel__item'}>AI Models</NavLink></li>
+                {/* AI Bindings removed; consolidated into AI Providers page */}
+             </ul>
+           )}
+         </nav>
         )}
         {collapsed && hoveredRail && (
           <div

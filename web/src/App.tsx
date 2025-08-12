@@ -9,6 +9,9 @@ import LicensingPage from './pages/LicensingPage'
 import PacksPage from './pages/PacksPage'
 import DataversePage from './pages/DataversePage'
 import SettingsPage from './pages/SettingsPage'
+import AIProvidersPage from './pages/AIProvidersPage'
+import AIModelsPage from './pages/AIModelsPage'
+
 import AboutPage from './pages/AboutPage'
 import ResourcesPage from './pages/ResourcesPage'
 import DiagnosticsPage from './pages/DiagnosticsPage'
@@ -47,6 +50,9 @@ function App() {
         <Route path="/sa/arm" element={<SAArmCatalogPage />} />
         <Route path="/sa/erd" element={<SAErdPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings/ai/providers" element={<AIProvidersPage />} />
+        <Route path="/settings/ai/models" element={<AIModelsPage />} />
+
         <Route path="/about" element={<AboutPage />} />
         <Route path="*" element={<div className="container"><h1>Not Found</h1></div>} />
       </Routes>

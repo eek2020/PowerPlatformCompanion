@@ -53,6 +53,21 @@ A lightweight validator exists in `web/src/utils/validators.ts`.
 - `mm.icons.fillColor: string` — default icon fill colour or `none`.
 - `mm.icons.rounded: '0' | '1'` — rounded linecap/linejoin toggle.
 
+### AI settings and bindings
+
+- `mm.ai.activeProvider: 'openai' | 'anthropic'` — current global provider selection.
+- `mm.ai.activeModel: string` — current global model selection.
+- `mm.ai.models.openai: string[]` — cached/fetched list of OpenAI model ids.
+- `mm.ai.models.anthropic: string[]` — cached/fetched list of Anthropic model ids.
+- `mm.ai.prompt.<provider>.<model>: string` — per provider+model system prompt text.
+- `mm.ai.bindings.v1: Record<ProcessId, { provider: ProviderId; model: string; promptOverride?: string } | undefined>` — per‑process overrides.
+
+Types live in `web/src/lib/ai.ts`:
+
+- `type ProviderId = 'openai' | 'anthropic'`
+- `type ProcessId = 'snippets' | 'delegation' | 'expression' | 'diagnostics' | 'formatter' | 'dataverse' | 'packs' | 'icons' | 'planning'`
+- `type Binding = { provider: ProviderId; model: string; promptOverride?: string }`
+
 ### Solution Architecture workspace keys
 
 The SA workspace uses the following keys (see types in `web/src/types/sa.ts`):

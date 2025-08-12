@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 export default function SettingsPage() {
+
   const [notifyMonths, setNotifyMonths] = useState<number>(() => {
     const v = Number(localStorage.getItem('mm.notifyWindowMonths') ?? '1')
     return Number.isFinite(v) && v >= 0 ? v : 1
@@ -103,6 +104,10 @@ export default function SettingsPage() {
           <small className="help">Used by Planning to compute an estimated time per row and total.</small>
         </div>
 
+        {/* AI settings moved to dedicated AI Providers page */}
+
+        {/* AI settings moved to dedicated pages: AI Providers and AI Models */}
+
         <div>
           <h2 style={{ fontSize: '1.1rem' }}>Coming Soon</h2>
           <ul>
@@ -115,3 +120,5 @@ export default function SettingsPage() {
     </main>
   )
 }
+
+

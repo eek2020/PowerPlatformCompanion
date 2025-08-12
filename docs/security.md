@@ -15,6 +15,21 @@ This MVP is a client‑only SPA. There is no backend service and no authenticati
   - `mm.icons.size`, `mm.icons.stroke`, `mm.icons.strokeColor`, `mm.icons.fillColor`, `mm.icons.rounded` — Icons defaults.
 - Guidance: keep only non‑sensitive preferences in `localStorage`.
 
+### AI configuration (dev only)
+
+- For developer convenience, AI provider API keys may be stored locally via the UI in `localStorage`.
+- Do not ship production with API keys in the browser. Instead:
+  - Use a serverless proxy (e.g., Netlify Functions/Azure Functions) to keep secrets server‑side.
+  - The browser should call your proxy; the proxy calls the AI provider using server‑side keys.
+  - Restrict origins and add basic abuse protection (rate limit/recaptcha) if exposing public endpoints.
+  - Consider per‑user authentication if needed; never embed secrets in client code or `localStorage`.
+
+### CORS and model lists
+
+- Direct browser calls to AI model listing endpoints can be blocked by CORS.
+- The app falls back to seeded model lists when network calls fail.
+- In production, route model list and inference calls through the proxy noted above.
+
 ## External links & content
 
 - Resource links (YouTube/blogs) open in a new tab with `rel="noreferrer"`.

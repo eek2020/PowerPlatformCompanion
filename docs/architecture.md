@@ -18,8 +18,8 @@ The app uses a fixed left sidebar and offsets the main app container using CSS v
 
 ```css
 :root {
-  --sidebar-w: 248px;
-  --sidebar-w-collapsed: 64px;
+  --sidebar-w: 476px;
+  --sidebar-w-collapsed: 80px;
 }
 
 #root { padding-left: var(--sidebar-w); }
@@ -31,6 +31,8 @@ body.sidebar-collapsed #root { padding-left: var(--sidebar-w-collapsed); }
 ```
 
 The sidebar itself uses `box-sizing: border-box` to ensure its declared width includes padding/border exactly and prevent content from bleeding underneath.
+
+When collapsed, clicking a main rail auto-expands the sidebar and opens the corresponding submenu. A hover flyout is shown only in collapsed mode; in expanded mode the inline panel is used.
 
 Global overflow protections are applied in `web/src/index.css`:
 
@@ -44,6 +46,16 @@ Snippets page cards (`web/src/pages/SnippetsPage.tsx`) are constrained with `max
 
 - UI preferences (e.g., roadmap notification window, icon defaults) are persisted in `localStorage` under the `mm.*` namespace.
 - Data for pages (snippets/resources/roadmap) load from `/public/*.example.json` as placeholders and can be replaced with remote sources later.
+- AI configuration is centralized in `web/src/lib/ai.ts` with the following responsibilities:
+  - Active provider/model getters/setters (`mm.ai.activeProvider`, `mm.ai.activeModel`).
+  - Model lists per provider (`mm.ai.models.openai`, `mm.ai.models.anthropic`).
+  - Per provider+model system prompts (`mm.ai.prompt.<provider>.<model>`).
+  - Per‑process bindings map (`mm.ai.bindings.v1`) and `resolveConfig(process)` to determine effective provider/model/prompt.
+
+### AI settings pages
+
+- `web/src/pages/AIProvidersPage.tsx`: Consolidated management of AI providers. Features: collapsible provider sections; add/edit API keys (OpenAI/Anthropic and custom providers); add/remove providers; manage provider‑scoped models; and manage AI Process Bindings directly within this page. For development, keys are stored locally; use a serverless proxy in production.
+- `web/src/pages/AIModelsPage.tsx`: Choose active provider/model, fetch or seed model lists, and edit per‑model system prompts.
 
 ## Error handling
 
