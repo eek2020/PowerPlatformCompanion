@@ -82,11 +82,12 @@ Note: Roadmap and Licensing are surfaced under the Solution Architecture rail fo
 - AI abstraction: provider-agnostic interface supporting OpenAI/Azure OpenAI. Key stored locally; calls via Netlify functions.
 - ARM: seed catalog from Microsoft Quickstart templates (public GitHub). Deploy via Azure Portal links or az CLI guidance.
 
-## Serverless Endpoints (proposed)
+## Serverless Endpoints
 
-- POST /api/sa/generate-options { requirements[], provider, model, systemPrompt? } → [{ requirementId, options: [A,B] }]
-- POST /api/sa/hld-draft { brief, docs? } → { mermaidCode, narrative }
-- POST /api/sa/erd-draft { description } → { entities[], fields[], mermaidCode }
+- POST `/api/sa/generate-options` { requirements[], provider, model, systemPrompt?, apiKey } → [{ requirementId, options: [A,B] }]
+  - Current implementation calls OpenAI via Netlify Functions and builds the prompt from both `title` and `description` of each requirement. The `apiKey` is provided by the client (read from `web/src/lib/secrets.ts`) and not stored server-side. Returns 401 if `apiKey` is missing.
+- POST `/api/sa/hld-draft` { brief, docs? } → { mermaidCode, narrative }
+- POST `/api/sa/erd-draft` { description } → { entities[], fields[], mermaidCode }
 
 Notes: Implement rate limiting, input validation, and redact PII. Streaming responses optional.
 
@@ -120,7 +121,7 @@ Notes: Implement rate limiting, input validation, and redact PII. Streaming resp
 ### Flow
 
 - __Import__: Parse CSV/XLSX in-browser using SheetJS (`xlsx`), map to `Requirement` records.
-- __Analyze__: Call `POST /api/sa/generate-options` with a batch of requirements. The serverless function selects the provider/model and returns two structured options per requirement.
+- __Analyze__: Call `POST /api/sa/generate-options` with a batch of requirements. The function constructs a prompt using each requirement's `title` and `description`, applies the selected `provider/model/systemPrompt`, and returns structured dual options. The client supplies the provider API key from `SecretStore`.
 - __Persist__: Store results via `StorageService` (`web/src/lib/storage.ts`) to avoid re-calling AI for unchanged rows.
 
 ### Cost‑Effective Testing Strategy

@@ -78,6 +78,34 @@ The SA workspace uses the following keys (see types in `web/src/types/sa.ts`):
 - `mm.sa.erd.v1: { entities: Entity[]; fields: Field[] }` — ERD designer state.
 - `mm.sa.catalog.v1: ArmTemplate[]` — local ARM templates catalog.
 
+## Serverless API Schemas (SA)
+
+### POST /api/sa/generate-options
+
+- Request body:
+  - `requirements: { id: string; title: string; description: string }[]` — each item sends both title and description.
+  - `provider?: 'openai' | 'azure-openai'`
+  - `model?: string`
+  - `systemPrompt?: string`
+  - `apiKey: string` — required; provided by client from `SecretStore` and not stored server-side.
+
+- Response body:
+  - `Array<{
+        requirementId: string,
+        options: Array<{
+          optionType: 'PowerPlatform' | 'Azure',
+          architectureSummary?: string,
+          components?: string[],
+          services?: string[],
+          tradeoffs?: string,
+          [k: string]: unknown
+        }>
+      }>`
+
+Notes:
+- The Netlify function constructs prompts from both `title` and `description`.
+- Returns 401 when `apiKey` is missing.
+
 ## Future data sources
 
 - Official roadmap feed (normalized into the above shape).

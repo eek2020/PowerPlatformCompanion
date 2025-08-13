@@ -1,11 +1,11 @@
 import { useEffect, useState, useMemo } from 'react'
+import { secrets } from '../lib/secrets'
 import {
   ALL_PROCESSES,
   type ProviderId,
   type ProcessId,
   getModels,
-  getPrompt,
-  setPrompt,
+  setModels,
   getBindings,
   setBinding,
   resolveConfig,
@@ -45,7 +45,7 @@ export default function AIProvidersPage() {
         apiKey: localStorage.getItem('mm.ai.key.openai') || '',
         baseUrl: 'https://api.openai.com/v1',
         isExpanded: true,
-        models: []
+        models: getModels('openai'),
       },
       {
         id: 'anthropic',
@@ -53,7 +53,7 @@ export default function AIProvidersPage() {
         apiKey: localStorage.getItem('mm.ai.key.anthropic') || '',
         baseUrl: 'https://api.anthropic.com',
         isExpanded: true,
-        models: []
+        models: getModels('anthropic'),
       }
     ]
   })
@@ -65,7 +65,6 @@ export default function AIProvidersPage() {
   })
   const [isAddingProvider, setIsAddingProvider] = useState(false)
   const [newModel, setNewModel] = useState('')
-  const [selectedProviderId, setSelectedProviderId] = useState('')
   const [bindingsVersion, setBindingsVersion] = useState(0)
   const [openBindings, setOpenBindings] = useState<Record<ProcessId, boolean>>({} as Record<ProcessId, boolean>)
   const toggleBinding = (id: ProcessId) => setOpenBindings(prev => ({ ...prev, [id]: !prev[id] }))
@@ -80,9 +79,18 @@ export default function AIProvidersPage() {
     providers.forEach(provider => {
       if (provider.id === 'openai') {
         localStorage.setItem('mm.ai.key.openai', provider.apiKey)
+        if (provider.apiKey) secrets.set('ai.key.openai', provider.apiKey); else secrets.delete('ai.key.openai')
+        // Keep the shared models store (used by bindings) in sync
+        if (Array.isArray(provider.models)) setModels('openai', provider.models)
       } else if (provider.id === 'anthropic') {
         localStorage.setItem('mm.ai.key.anthropic', provider.apiKey)
+        if (provider.apiKey) secrets.set('ai.key.anthropic', provider.apiKey); else secrets.delete('ai.key.anthropic')
+        if (Array.isArray(provider.models)) setModels('anthropic', provider.models)
       }
+      
+      // Generic secret key for custom providers
+      const keyName = `ai.key.${provider.id}`
+      if (provider.apiKey) secrets.set(keyName, provider.apiKey); else secrets.delete(keyName)
     })
   }, [providers])
 
@@ -96,6 +104,9 @@ export default function AIProvidersPage() {
     setProviders(prev => prev.map(p => 
       p.id === id ? { ...p, apiKey } : p
     ))
+    // reflect immediately in secrets
+    const keyName = id === 'openai' ? 'ai.key.openai' : id === 'anthropic' ? 'ai.key.anthropic' : `ai.key.${id}`
+    if (apiKey) secrets.set(keyName, apiKey); else secrets.delete(keyName)
   }
 
   const addProvider = () => {
@@ -115,6 +126,7 @@ export default function AIProvidersPage() {
     }
 
     setProviders(prev => [...prev, provider])
+    if (newProvider.apiKey) secrets.set(`ai.key.${id}`, newProvider.apiKey)
     setNewProvider({ name: '', apiKey: '', baseUrl: '' })
     setIsAddingProvider(false)
   }
@@ -124,19 +136,21 @@ export default function AIProvidersPage() {
     setProviders(prev => prev.filter(p => p.id !== id))
   }
 
-  const addModel = () => {
-    if (!newModel.trim() || !selectedProviderId) {
-      alert('Please provide model name and select a provider')
+  const addModel = (providerId: string) => {
+    if (!newModel.trim()) {
+      alert('Please provide model name')
       return
     }
 
     setProviders(prev => prev.map(p => 
-      p.id === selectedProviderId 
-        ? { ...p, models: [...p.models, newModel] }
+      p.id === providerId 
+        ? { ...p, models: [...new Set([...p.models, newModel])].sort() }
         : p
     ))
+    // Also reflect in the shared models store immediately
+    const current = providers.find(p => p.id === providerId)
+    if (current) setModels(current.id as ProviderId, [...new Set([...current.models, newModel])].sort())
     setNewModel('')
-    setSelectedProviderId('')
   }
 
   const removeModel = (providerId: string, model: string) => {
@@ -145,6 +159,8 @@ export default function AIProvidersPage() {
         ? { ...p, models: p.models.filter(m => m !== model) }
         : p
     ))
+    const current = providers.find(p => p.id === providerId)
+    if (current) setModels(current.id as ProviderId, current.models.filter(m => m !== model))
   }
 
   const clearAll = () => {
@@ -156,6 +172,10 @@ export default function AIProvidersPage() {
     localStorage.removeItem('mm.ai.models.anthropic')
     localStorage.removeItem('mm.ai.activeModel')
     localStorage.removeItem('mm.ai.activeProvider')
+    // wipe known secrets
+    secrets.delete('ai.key.openai')
+    secrets.delete('ai.key.anthropic')
+    providers.forEach(p => secrets.delete(`ai.key.${p.id}`))
     setProviders([])
     alert('AI settings cleared from localStorage.')
   }
@@ -173,7 +193,7 @@ export default function AIProvidersPage() {
         </div>
 
         {isAddingProvider && (
-          <div style={{ border: '1px solid var(--muted, #e5e7eb)', borderRadius: 8, padding: 16, marginBottom: '1rem' }}>
+          <div style={{ border: '1px solid var(--vscode-input-border)', borderRadius: 8, padding: 16, marginBottom: '1rem' }}>
             <h3>Add New Provider</h3>
             <div style={{ display: 'grid', gap: '0.5rem', maxWidth: 400 }}>
               <div>
@@ -216,124 +236,83 @@ export default function AIProvidersPage() {
 
         <div style={{ display: 'grid', gap: '0.75rem' }}>
           {providers.map(provider => (
-            <div key={provider.id} style={{ border: '1px solid var(--muted, #e5e7eb)', borderRadius: 8 }}>
+            <div key={provider.id} style={{ border: '1px solid var(--vscode-input-border)', borderRadius: 8 }}>
               <div 
-                style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center', 
-                  padding: 12,
-                  cursor: 'pointer',
-                  borderBottom: provider.isExpanded ? '1px solid var(--muted, #e5e7eb)' : 'none'
-                }}
-                onClick={() => toggleProvider(provider.id)}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 12 }}
               >
-                <h3 style={{ margin: 0, fontSize: '1.1rem' }}>
-                  {provider.isExpanded ? '▼' : '▶'} {provider.name}
-                </h3>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  {provider.id !== 'openai' && provider.id !== 'anthropic' && (
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); removeProvider(provider.id) }}
-                      style={{ fontSize: '0.8rem', padding: '2px 6px' }}
-                    >
-                      Remove
-                    </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <button className="provider-header" onClick={() => toggleProvider(provider.id)} aria-expanded={provider.isExpanded} aria-controls={`prov-${provider.id}`} style={{ fontSize: 18, lineHeight: '1', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                    {provider.isExpanded ? '▼' : '▶'}
+                  </button>
+                  <strong>{provider.name}</strong>
+                  <small style={{ color: 'var(--vscode-muted-foreground)' }}>({provider.id})</small>
+                </div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <button onClick={() => removeProvider(provider.id)}>Remove</button>
+                  {/* Discover models only wired for OpenAI for now */}
+                  {provider.id === 'openai' && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          const { listModels } = await import('../lib/ai/client')
+                          const resp = await listModels({ provider: 'openai', apiKey: provider.apiKey })
+                          const ids = (resp.models || []).map(m => m.id).sort()
+                          // Save to shared store and local provider state
+                          setModels('openai', ids)
+                          setProviders(prev => prev.map(p => p.id === provider.id ? { ...p, models: ids } : p))
+                          alert(`Discovered ${ids.length} models for OpenAI`)
+                        } catch (e: any) {
+                          alert(`Failed to discover models: ${e?.message || String(e)}`)
+                        }
+                      }}
+                    >Discover models</button>
                   )}
                 </div>
               </div>
-              
               {provider.isExpanded && (
-                <div style={{ padding: 12 }}>
-                  <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor={`provider-${provider.id}-key`}>API Key</label>
-                    <input 
-                      id={`provider-${provider.id}-key`}
-                      type="password" 
-                      placeholder="Enter API key..."
-                      value={provider.apiKey}
-                      onChange={e => updateProviderKey(provider.id, e.target.value)}
-                    />
-                    {provider.baseUrl && (
-                      <small className="help">Base URL: {provider.baseUrl}</small>
-                    )}
+                <div id={`prov-${provider.id}`} style={{ padding: '0 12px 12px 12px', borderTop: '1px solid var(--vscode-input-border)', display: 'grid', gap: 12 }}>
+                  <div style={{ display: 'grid', gap: 6, maxWidth: 500 }}>
+                    <label htmlFor={`key-${provider.id}`}>API Key</label>
+                    <input id={`key-${provider.id}`} type="password" value={provider.apiKey} onChange={e => updateProviderKey(provider.id, e.target.value)} placeholder="Set your API key" />
                   </div>
-                  
                   <div>
-                    <h4 style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>Custom Models</h4>
-                    {provider.models.length > 0 ? (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginBottom: '0.5rem' }}>
-                        {provider.models.map(model => (
-                          <span 
-                            key={model}
-                            style={{ 
-                              background: 'var(--muted, #f3f4f6)', 
-                              padding: '2px 6px', 
-                              borderRadius: 4, 
-                              fontSize: '0.8rem',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '4px'
-                            }}
-                          >
+                    <h4>Models</h4>
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                      gap: '8px',
+                      maxHeight: '300px',
+                      overflowY: 'auto',
+                      padding: '8px',
+                      border: '1px solid var(--vscode-input-border)',
+                      borderRadius: '4px',
+                    }}>
+                      {(provider.models || []).map(model => (
+                        <div key={model} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          background: 'var(--vscode-input-background)',
+                          border: '1px solid var(--vscode-input-border)',
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                        }}>
+                          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginRight: '8px' }}>
                             {model}
-                            <button 
-                              onClick={() => removeModel(provider.id, model)}
-                              style={{ 
-                                background: 'none', 
-                                border: 'none', 
-                                cursor: 'pointer', 
-                                fontSize: '0.7rem',
-                                padding: 0,
-                                color: 'var(--danger, #dc2626)'
-                              }}
-                            >
-                              ×
-                            </button>
                           </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground, #6b7280)', margin: '0 0 0.5rem 0' }}>
-                        No custom models added
-                      </p>
-                    )}
+                          <button onClick={() => removeModel(provider.id, model)} style={{ background: 'transparent', border: 'none', color: 'var(--vscode-foreground)', cursor: 'pointer', padding: '0 4px' }}>&times;</button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
+                    <input type="text" placeholder="Add model id (e.g., gpt-4o-mini)" value={newModel} onChange={e => setNewModel(e.target.value)} style={{ minWidth: 260 }} />
+                    <button onClick={() => addModel(provider.id)}>Add Model</button>
                   </div>
                 </div>
               )}
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Add Model Section */}
-      <section style={{ marginBottom: '2rem' }}>
-        <h2>Add Model</h2>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'end', maxWidth: 600 }}>
-          <div style={{ flex: 1 }}>
-            <label htmlFor="new-model-name">Model Name</label>
-            <input 
-              id="new-model-name"
-              type="text" 
-              placeholder="e.g., gpt-4-custom"
-              value={newModel}
-              onChange={e => setNewModel(e.target.value)}
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <label htmlFor="model-provider-select">Provider</label>
-            <select 
-              id="model-provider-select"
-              value={selectedProviderId}
-              onChange={e => setSelectedProviderId(e.target.value)}
-            >
-              <option value="">Select provider...</option>
-              {providers.map(provider => (
-                <option key={provider.id} value={provider.id}>{provider.name}</option>
-              ))}
-            </select>
-          </div>
-          <button onClick={addModel}>Add Model</button>
         </div>
       </section>
 
@@ -347,28 +326,44 @@ export default function AIProvidersPage() {
             const b = getBindings()[id]
             const open = !!openBindings[id]
             return (
-              <div key={id} style={{ border: '1px solid var(--muted, #e5e7eb)', borderRadius: 8 }}>
+              <div key={id} style={{ border: '1px solid var(--vscode-input-border)', borderRadius: 8 }}>
                 <button
                   type="button"
+                  className="process-binding-header"
                   onClick={() => toggleBinding(id)}
                   style={{
                     width: '100%', textAlign: 'left', padding: 12, cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    background: 'transparent', border: 'none', borderBottom: open ? '1px solid var(--muted, #e5e7eb)' : 'none'
+                    background: 'transparent', border: 'none', borderBottom: open ? '1px solid var(--vscode-input-border)' : 'none',
+                    color: 'var(--vscode-foreground)'
                   }}
                   aria-expanded={open}
                   aria-controls={`pb-${id}`}
                 >
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span>{open ? '▼' : '▶'}</span>
-                    <strong>{label}</strong>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ 
+                      fontSize: '1.1rem', 
+                      fontWeight: 'bold',
+                      minWidth: '16px',
+                      display: 'inline-block',
+                      color: '#1E1E1E'
+                    }}>
+                      {open ? '▼' : '▶'}
+                    </span>
+                    <strong style={{ 
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      color: '#1E1E1E'
+                    }}>
+                      {label}
+                    </strong>
                   </span>
-                  <span style={{ fontSize: '0.8rem', color: b ? 'var(--success, #16a34a)' : 'var(--muted-foreground, #6b7280)' }}>
+                  <span className={`status-text ${b ? 'custom' : 'global'}`}>
                     {b ? 'Custom' : 'Using global'}
                   </span>
                 </button>
                 {open && (
-                  <div id={`pb-${id}`} style={{ padding: 12 }}>
+                  <div id={`pb-${id}`} style={{ padding: 12, borderTop: '1px solid var(--vscode-input-border)' }}>
                     <ProcessBindingCard proc={id} label={label} onChange={() => setBindingsVersion(v => v + 1)} />
                   </div>
                 )}
@@ -380,7 +375,7 @@ export default function AIProvidersPage() {
 
       {/* Clear All Section */}
       <section>
-        <button onClick={clearAll} style={{ background: 'var(--danger, #dc2626)', color: 'white' }}>
+        <button onClick={clearAll} style={{ background: 'var(--vscode-errorForeground)', color: 'white' }}>
           Clear All AI Settings
         </button>
         <div style={{ marginTop: 8 }}>
@@ -391,130 +386,77 @@ export default function AIProvidersPage() {
   )
 }
 
-function ProcessBindingCard({ proc, label, onChange }: { proc: ProcessId; label: string; onChange: () => void }) {
-  const bound = getBindings()[proc]
-  const isCustom = !!bound
-  const provider: ProviderId = bound?.provider ?? (resolveConfig(proc).provider)
+// Component for managing a single process binding
+function ProcessBindingCard({ proc, label, onChange }: { proc: ProcessId, label: string, onChange: () => void }) {
+  const [provider, setProvider] = useState<ProviderId>(() => resolveConfig(proc).provider)
+  const [model, setModel] = useState<string>(() => resolveConfig(proc).model)
+  const [prompt, setLocalPrompt] = useState<string>(() => resolveConfig(proc).prompt)
   const models = useModels(provider)
-  const model = bound?.model ?? resolveConfig(proc).model
-
-  const defaultPrompt = getPrompt(provider, model)
-  const [useOverride, setUseOverride] = useState<boolean>(!!bound?.promptOverride)
-  const [overrideText, setOverrideText] = useState<string>(bound?.promptOverride ?? '')
 
   useEffect(() => {
-    // If changing model under a custom binding and not overriding, reflect default prompt
-    if (!useOverride) {
-      const p = getPrompt(provider, model)
-      setOverrideText(p)
+    // When provider changes, if current model isn't in the new list, reset it.
+    if (!models.includes(model)) {
+      setModel(models[0] || '')
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider, model, useOverride])
+  }, [provider, models, model])
 
-  const setCustom = (enabled: boolean) => {
-    if (!enabled) {
-      setBinding(proc, undefined)
-      onChange()
-      return
-    }
-    setBinding(proc, { provider, model, promptOverride: useOverride ? overrideText : undefined })
+  const handleProviderChange = (newProvider: ProviderId) => {
+    setProvider(newProvider)
+  }
+
+  const saveBinding = () => {
+    // A specific binding is being set for this process
+    setBinding(proc, { provider, model, prompt })
+    // The prompt is part of the binding, so we don't need a separate setPrompt call for the process
     onChange()
+    alert(`Binding for '${label}' saved.`)
   }
 
-  const changeProvider = (p: ProviderId) => {
-    if (!isCustom) setCustom(true)
-    setBinding(proc, { provider: p, model: '', promptOverride: useOverride ? overrideText : undefined })
-    onChange()
-  }
-
-  const changeModel = (m: string) => {
-    if (!isCustom) setCustom(true)
-    setBinding(proc, { provider, model: m, promptOverride: useOverride ? overrideText : undefined })
-    onChange()
-  }
-
-  const saveDefaultPrompt = () => {
-    if (!model) return
-    setPrompt(provider, model, overrideText)
-    alert('Saved as the default system prompt for this provider+model')
-  }
-
-  const clearBinding = () => {
-    if (!confirm(`Clear custom binding for ${label}?`)) return
+  const resetBinding = () => {
+    // Clear the specific binding for this process
     setBinding(proc, undefined)
+
+    // Reflect the reset to global defaults immediately in the UI
+    const globals = resolveConfig(proc)
+    setProvider(globals.provider)
+    setModel(globals.model)
+    setLocalPrompt(globals.prompt)
     onChange()
+    alert(`Binding for '${label}' reset to global default.`)
   }
 
   return (
-    <div style={{ border: '1px solid var(--muted, #e5e7eb)', borderRadius: 8, padding: 12 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-        <h3 style={{ fontSize: '1.05rem', margin: 0 }}>{label}</h3>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input type="checkbox" checked={isCustom} onChange={e => setCustom(e.target.checked)} />
-            <span>Custom binding</span>
-          </label>
-          {isCustom && (
-            <button onClick={clearBinding} style={{ fontSize: '0.8rem', padding: '2px 6px' }}>Clear</button>
-          )}
-        </div>
-      </div>
-
-      <div style={{ display: 'grid', gap: '0.5rem', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginTop: 8 }}>
-        <div>
-          <label htmlFor={`${proc}-provider`}>Provider</label>
-          <select id={`${proc}-provider`} value={provider} onChange={e => changeProvider(e.target.value as ProviderId)}>
+    <div style={{ display: 'grid', gap: '1rem' }}>
+      <div style={{ display: 'flex', gap: '1rem' }}>
+        <div style={{ flex: 1 }}>
+          <label>Provider</label>
+          <select value={provider} onChange={e => handleProviderChange(e.target.value as ProviderId)}>
             <option value="openai">OpenAI</option>
             <option value="anthropic">Anthropic</option>
+            {/* Add other providers as they become available */}
           </select>
         </div>
-
-        <div>
-          <label htmlFor={`${proc}-model`}>Model</label>
-          <select id={`${proc}-model`} value={model} onChange={e => changeModel(e.target.value)}>
-            <option value="">Select a model...</option>
+        <div style={{ flex: 1 }}>
+          <label>Model</label>
+          <select value={model} onChange={e => setModel(e.target.value)} disabled={!models.length}>
             {models.map(m => (
               <option key={m} value={m}>{m}</option>
             ))}
           </select>
         </div>
       </div>
-
-      <div style={{ marginTop: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input 
-              type="checkbox" 
-              checked={useOverride} 
-              onChange={e => {
-                setUseOverride(e.target.checked)
-                if (isCustom) {
-                  setBinding(proc, { provider, model, promptOverride: e.target.checked ? overrideText : undefined })
-                  onChange()
-                }
-              }} 
-            />
-            <span>System prompt</span>
-          </label>
-          {useOverride && model && (
-            <button onClick={saveDefaultPrompt} style={{ fontSize: '0.8rem', padding: '2px 6px' }}>
-              Save as default
-            </button>
-          )}
-        </div>
+      <div>
+        <label>System Prompt (overrides default)</label>
         <textarea 
-          rows={4} 
-          value={useOverride ? overrideText : defaultPrompt}
-          onChange={e => {
-            setOverrideText(e.target.value)
-            if (isCustom && useOverride) {
-              setBinding(proc, { provider, model, promptOverride: e.target.value })
-              onChange()
-            }
-          }}
-          disabled={!useOverride}
-          style={{ width: '100%', resize: 'vertical' }}
+          value={prompt} 
+          onChange={e => setLocalPrompt(e.target.value)} 
+          rows={3} 
+          placeholder={`e.g., You are a helpful assistant specializing in ${label}.`}
         />
+      </div>
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <button onClick={saveBinding}>Save Binding</button>
+        <button onClick={resetBinding}>Reset to Global</button>
       </div>
     </div>
   )

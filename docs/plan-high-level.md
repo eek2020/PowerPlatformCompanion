@@ -3,6 +3,7 @@
 Authoritative high-level plan capturing phases of delivery and history of major events/decisions.
 
 ## Vision
+
 A companion for Solution Architects to plan, design, and validate Microsoft solutions (Power Platform & Azure), accelerating discovery-to-design with AI assistance.
 
 ## Phase Timeline (History → Now → Next)
@@ -41,20 +42,24 @@ A companion for Solution Architects to plan, design, and validate Microsoft solu
   - Desktop packaging (Tauri preferred) for offline and secure key storage.
   - Cloud persistence (e.g., Supabase) with RLS and auth integration.
 
-## Release Strategy
+## P1-P5 Release Strategy
+
 - Local-first by default. Serverless for AI and utility endpoints.
 - Feature flags for major epics (Licensing parsing, Solution Architecture).
 - Tagged releases at phase milestones; preview deploys per PR.
 
 ## Deployment to Production
+
 - Host on Netlify; use environment variables for feature flags.
 - No server-stored AI keys by default; keys remain local unless explicitly configured by user.
 
 ## Security & Privacy (Principles)
+
 - Least-privilege serverless endpoints with strict validation and redaction.
 - CSP and dependency hygiene; avoid unnecessary third-party scripts.
 
 ## References
+
 - Detailed tasks: `docs/plan-detailed-tasks.md`
 - Previous docs merged here: `docs/product-delivery-plan.md` (superseded).
 - Detailed spec for Solution Architecture workspace: `docs/solution-architecture.md`.

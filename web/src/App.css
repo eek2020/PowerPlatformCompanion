@@ -67,3 +67,43 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Fix for AI Provider page process binding headers */
+.process-binding-header {
+  color: var(--vscode-foreground) !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.process-binding-header:hover {
+  background: var(--vscode-list-hover-background) !important;
+}
+
+.process-binding-header[aria-expanded="false"] {
+  border-bottom: 1px solid transparent !important;
+}
+
+.process-binding-header[aria-expanded="true"] {
+  border-bottom: 1px solid var(--vscode-input-border) !important;
+}
+
+.process-binding-header .status-text {
+  font-size: 0.8rem;
+}
+
+.process-binding-header .status-text.custom {
+  color: var(--vscode-focusBorder);
+  font-weight: bold;
+}
+
+.process-binding-header .status-text.global {
+  color: var(--vscode-descriptionForeground);
+}
+
+.provider-header {
+  color: var(--vscode-foreground) !important;
+}
+
+

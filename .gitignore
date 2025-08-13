@@ -1,0 +1,19 @@
+# Local Netlify folder
+.netlify
+
+# Node modules and lockfiles
+node_modules/
+web/node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build artifacts
+dist/
+web/dist/
+coverage/
+
+# OS/Editor files
+.DS_Store
+.vscode/
+.idea/

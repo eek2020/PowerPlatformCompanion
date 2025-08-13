@@ -199,7 +199,6 @@ export default function SARequirementsPage() {
   const [selectedFeature, setSelectedFeature] = useState<Feature>('requirements')
   const [aiProvider, setAiProvider] = useState<'openai' | 'azure-openai'>(() => storage.getItem<'openai' | 'azure-openai'>('sa.ai.bindings.requirements.provider', 'openai'))
   const [aiModel, setAiModel] = useState<string>(() => storage.getItem<string>('sa.ai.bindings.requirements.model', 'gpt-4o-mini'))
-  const [apiKey, setApiKey] = useState<string>('')
   const defaultPrompt = 'You are a senior Microsoft Solution Architect. Return ONLY JSON with the specified schema for three options (Power Platform Only, Hybrid, Azure Only). Keep architectureSummary concise and populate fields as described.'
   const [aiPrompt, setAiPrompt] = useState<string>(() => storage.getItem<string>('sa.ai.bindings.requirements.prompt', defaultPrompt))
   const [modelOptions, setModelOptions] = useState<Array<{ id: string; label: string; deprecated?: boolean }>>([])
@@ -217,14 +216,12 @@ export default function SARequirementsPage() {
       const reqProvider = storage.getItem<'openai' | 'azure-openai'>('sa.ai.bindings.requirements.provider', aiProvider)
       const reqModel = storage.getItem<string>('sa.ai.bindings.requirements.model', aiModel)
       const reqPrompt = storage.getItem<string>('sa.ai.bindings.requirements.prompt', aiPrompt)
-      const reqKey = secrets.get('ai.requirements.apiKey') || apiKey
+      const reqKey = secrets.get(`ai.key.${reqProvider}`) || ''
       const res = await generateTripleOptions({
         requirements: [{ id: selectedReq.id, title: selectedReq.title || '', description: selectedReq.description || '' }],
         provider: reqProvider,
         model: reqModel,
         systemPrompt: reqPrompt,
-        // For now we pass apiKey to the function; in production prefer server-side secrets.
-        // @ts-expect-error include apiKey for function side use
         apiKey: reqKey,
       })
       const item = res[0]
@@ -261,18 +258,16 @@ export default function SARequirementsPage() {
   function kProvider(f: Feature) { return `sa.ai.bindings.${f}.provider` }
   function kModel(f: Feature) { return `sa.ai.bindings.${f}.model` }
   function kPrompt(f: Feature) { return `sa.ai.bindings.${f}.prompt` }
-  function kKey(f: Feature) { return `ai.${f}.apiKey` }
+  // No per-feature API key; we read from SecretStore by provider id.
 
   // Load state when feature changes
   useEffect(() => {
     const p = storage.getItem<'openai' | 'azure-openai'>(kProvider(selectedFeature), 'openai')
     const m = storage.getItem<string>(kModel(selectedFeature), 'gpt-4o-mini')
     const pr = storage.getItem<string>(kPrompt(selectedFeature), defaultPrompt)
-    const key = secrets.get(kKey(selectedFeature)) || ''
     setAiProvider(p)
     setAiModel(m)
     setAiPrompt(pr)
-    setApiKey(key)
   }, [selectedFeature])
 
   // Load models when provider or api key changes
@@ -281,7 +276,8 @@ export default function SARequirementsPage() {
       setModelsLoading(true)
       setModelsError('')
       const { listModels } = await import('../../lib/ai/client')
-      const r = await listModels({ provider: aiProvider, apiKey })
+      const key = secrets.get(`ai.key.${aiProvider}`) || undefined
+      const r = await listModels({ provider: aiProvider, apiKey: key })
       setModelOptions(r.models || [])
       // If current model not in list and not manual, keep as is but allow manual toggle
     } catch (e: any) {
@@ -293,7 +289,7 @@ export default function SARequirementsPage() {
 
   useEffect(() => {
     refreshModels()
-  }, [aiProvider, apiKey])
+  }, [aiProvider])
 
   function saveEditor() {
     if (!selectedReq) return
@@ -596,13 +592,8 @@ export default function SARequirementsPage() {
                   </label>
                   {modelsError && <div style={{ color: 'crimson' }}>{modelsError}</div>}
                 </div>
-                <label style={{ display: 'flex', flexDirection: 'column', minWidth: 280 }}>
-                  API Key
-                  <input type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="sk-..." />
-                </label>
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
-                  <button onClick={() => { storage.setItem(kProvider(selectedFeature), aiProvider); storage.setItem(kModel(selectedFeature), aiModel); storage.setItem(kPrompt(selectedFeature), aiPrompt); secrets.set(kKey(selectedFeature), apiKey) }}>Save Bindings</button>
-                  <button onClick={() => { secrets.delete(kKey(selectedFeature)); setApiKey('') }}>Clear Key</button>
+                  <button onClick={() => { storage.setItem(kProvider(selectedFeature), aiProvider); storage.setItem(kModel(selectedFeature), aiModel); storage.setItem(kPrompt(selectedFeature), aiPrompt) }}>Save Bindings</button>
                 </div>
               </div>
               <div style={{ marginTop: 8 }}>

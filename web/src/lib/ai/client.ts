@@ -98,6 +98,8 @@ export interface GenerateTripleOptionsRequest {
   provider?: AIProvider
   model?: string
   systemPrompt?: string
+  // Optional: API key to be used server-side. Prefer server-side env vars in production.
+  apiKey?: string
 }
 
 export async function generateTripleOptions(req: GenerateTripleOptionsRequest): Promise<GenerateTripleOptionsItem[]> {

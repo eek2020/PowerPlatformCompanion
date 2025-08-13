@@ -19,7 +19,8 @@ export type ProcessId =
 export type Binding = {
   provider: ProviderId
   model: string
-  promptOverride?: string
+  prompt: string  // Store prompt directly in the binding
+  promptOverride?: string // Legacy field, will be migrated
 }
 
 const LS = {
@@ -62,11 +63,62 @@ export const setBindings = (map: BindingsMap) => localStorage.setItem(LS.binding
 
 export const getBinding = (proc: ProcessId): Binding | undefined => getBindings()[proc]
 
+// Type guard to check if an object is a Binding
+const isBinding = (obj: any): obj is Binding => 
+  obj && typeof obj === 'object' && 'provider' in obj && 'model' in obj
+
+// Type for the old Binding format before we added the prompt field
+interface LegacyBinding {
+  provider: ProviderId
+  model: string
+  promptOverride?: string
+}
+
+// Migrate old bindings to include prompt field if needed
+const migrateBindings = (bindings: BindingsMap): BindingsMap => {
+  let changed = false
+  const result: BindingsMap = { ...bindings }
+  
+  for (const proc of Object.keys(result) as ProcessId[]) {
+    const binding = result[proc]
+    if (binding && isBinding(binding) && !('prompt' in binding)) {
+      // Migrate from promptOverride to prompt
+      const oldBinding = binding as unknown as LegacyBinding
+      result[proc] = {
+        provider: oldBinding.provider,
+        model: oldBinding.model,
+        prompt: oldBinding.promptOverride || getPrompt(oldBinding.provider, oldBinding.model),
+        ...(oldBinding.promptOverride && { promptOverride: oldBinding.promptOverride })
+      }
+      changed = true
+    }
+  }
+  
+  return changed ? result : bindings
+}
+
 export const setBinding = (proc: ProcessId, binding: Binding | undefined) => {
   const map = getBindings()
-  if (binding) map[proc] = binding
-  else delete map[proc]
-  setBindings(map)
+  
+  // Migrate existing bindings if needed
+  const migratedMap = migrateBindings(map)
+  if (migratedMap !== map) {
+    setBindings(migratedMap)
+  }
+  
+  // Update the specified binding
+  if (binding) {
+    // Ensure prompt is set, falling back to provider/model prompt if not provided
+    const updatedBinding: Binding = {
+      ...binding,
+      prompt: binding.prompt || getPrompt(binding.provider, binding.model)
+    }
+    migratedMap[proc] = updatedBinding
+  } else {
+    delete migratedMap[proc]
+  }
+  
+  setBindings(migratedMap)
 }
 
 export type ResolvedConfig = { provider: ProviderId; model: string; prompt: string }
@@ -75,7 +127,8 @@ export type ResolvedConfig = { provider: ProviderId; model: string; prompt: stri
 export const resolveConfig = (proc: ProcessId): ResolvedConfig => {
   const b = getBinding(proc)
   if (b) {
-    const prompt = b.promptOverride ?? getPrompt(b.provider, b.model)
+    // Prefer the binding's prompt, then legacy promptOverride, then fall back to provider/model prompt
+    const prompt = b.prompt || b.promptOverride || getPrompt(b.provider, b.model)
     return { provider: b.provider, model: b.model, prompt }
   }
   const provider = getActiveProvider()

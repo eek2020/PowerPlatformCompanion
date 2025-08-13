@@ -114,8 +114,8 @@ export default function SettingsPage() {
             <a href="/settings/ai/providers" style={{ textDecoration: 'none' }}>
               <button>AI Providers</button>
             </a>
-            <a href="/settings/ai/models" style={{ textDecoration: 'none' }}>
-              <button>AI Models</button>
+            <a href="/settings/ai/playground" style={{ textDecoration: 'none' }}>
+              <button>AI Playground</button>
             </a>
             <a href="/settings/ai/costs" style={{ textDecoration: 'none' }}>
               <button>Cost Calculator</button>

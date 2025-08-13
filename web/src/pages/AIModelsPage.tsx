@@ -137,8 +137,8 @@ export default function AIModelsPage() {
 
   return (
     <main className="container">
-      <h1>AI Models & Prompts</h1>
-      <p>Select your provider and model, then craft a system prompt per model. These settings are stored locally in your browser.</p>
+      <h1>AI Playground</h1>
+      <p>Test providers, models, and prompts. Use this to experiment; production bindings live in AI Providers.</p>
 
       <section style={{ display: 'grid', gap: '0.75rem', maxWidth: 680 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '0.5rem', alignItems: 'end' }}>

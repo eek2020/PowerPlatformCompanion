@@ -53,6 +53,7 @@ function App() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/ai/providers" element={<AIProvidersPage />} />
         <Route path="/settings/ai/models" element={<AIModelsPage />} />
+        <Route path="/settings/ai/playground" element={<AIModelsPage />} />
         <Route path="/settings/ai/costs" element={<AICostCalculatorPage />} />
 
         <Route path="/about" element={<AboutPage />} />

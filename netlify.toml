@@ -1,3 +1,9 @@
+[dev]
+  command = "npm run --prefix web dev -- --port 5176"
+  targetPort = 5176
+  port = 8888
+  framework = "#custom"
+
 [build]
   command = "npm run build"
   publish = "web/dist"

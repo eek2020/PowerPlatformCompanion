@@ -5,6 +5,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: 5176,
+    strictPort: true,
     proxy: {
       // Dev-only proxy for M365 public roadmap API to avoid CORS
       '/api/m365': {
